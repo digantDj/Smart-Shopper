@@ -1,11 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
+    useLibrary 'org.apache.http.legacy'
 
     defaultConfig {
-        applicationId "com.example.android.smartshopper"
+        applicationId "com.group28.android.smartshopper"
         minSdkVersion 11
         targetSdkVersion 23
         versionCode 1
@@ -24,4 +26,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
+    compile 'com.google.android.gms:play-services-auth:9.0.0'
 }

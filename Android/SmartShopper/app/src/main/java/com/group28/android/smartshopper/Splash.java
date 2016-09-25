@@ -1,4 +1,4 @@
-package com.example.android.smartshopper;
+package com.group28.android.smartshopper;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +18,7 @@ public class Splash extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent i = new Intent(Splash.this, LoginActivity.class);
+                Intent i = new Intent(Splash.this, MainActivity.class);
                 startActivity(i);
             }
         }, 3000);

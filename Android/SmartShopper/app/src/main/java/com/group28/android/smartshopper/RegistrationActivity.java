@@ -1,4 +1,4 @@
-package com.example.android.smartshopper;
+package com.group28.android.smartshopper;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
