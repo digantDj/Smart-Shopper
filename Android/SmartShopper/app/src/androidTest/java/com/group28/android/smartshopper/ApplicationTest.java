@@ -1,4 +1,4 @@
-package com.example.android.smartshopper;
+package com.group28.android.smartshopper;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
