@@ -1,0 +1,17 @@
+Openshift(https://openshift.redhat.com/app/console/application/57f06da02d52716822000098-smartshop) : http://smartshop-raredev.rhcloud.com/
+Email : raredev0@gmail.com
+
+Password : sdKsZu5sBy
+
+Flask User Guide : https://developers.openshift.com/languages/python/flask.html
+
+MongoDB 2.4 database added.  Please make note of these credentials:
+
+   Root User:     admin
+   Root Password: YzAKqjZReCRw
+   Database Name: smartshop
+
+Connection URL: mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/
+
+git clone ssh://57f06da02d52716822000098@smartshop-raredev.rhcloud.com/~/git/smartshop.git/
+cd smartshop/
