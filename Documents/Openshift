@@ -15,3 +15,18 @@ Connection URL: mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/
 
 git clone ssh://57f06da02d52716822000098@smartshop-raredev.rhcloud.com/~/git/smartshop.git/
 cd smartshop/
+
+Python flask endpoints:
+1. Regsiter - 
+   
+      Method - POST
+      Message Body - {
+	                     "username" : "purukaushik",
+	                     "token" : "************************************",
+	                     "email" : "puru00047.usa@gmail.com"
+                     }
+                     
+      http://smartshop-raredev.rhcloud.com/register/
+   
+2. Sample /memo_details
+      
