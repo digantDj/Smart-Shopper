@@ -2,6 +2,7 @@ package com.group28.android.smartshopper;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,7 +21,6 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -37,6 +37,33 @@ public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
+    public  class Register extends AsyncTask<Object, Void, Object> {
+        protected Boolean doInBackground(Object... param) {
+            HttpResponse response = null;
+            HttpClient httpClient= (HttpClient)param[0];
+            HttpPost httpPost = (HttpPost)param[1];
+            try {
+                response = httpClient.execute(httpPost);
+                int statusCode = response.getStatusLine().getStatusCode();
+                final String responseBody = EntityUtils.toString(response.getEntity());
+                Log.i(TAG, "Signed in as: " + responseBody + "StatucCode: " + statusCode);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        protected void onProgressUpdate()
+        {
+            //setProgressPercent(progress[0]);
+        }
+
+        protected void onPostExecute(boolean result)
+        {
+            //showDialog("Downloaded " + result + " bytes");
+        }
+    }
 
 
     private static final String TAG = "SignInActivity";
@@ -94,7 +121,7 @@ public class MainActivity extends AppCompatActivity  implements
             // and the GoogleSignInResult will be available instantly.
             Log.d(TAG, "Got cached sign-in");
             GoogleSignInResult result = opr.get();
-     //       handleSignInResult(result);
+            handleSignInResult(result);
         } else {
             // If the user has not previously signed in on this device or the sign-in has expired,
             // this asynchronous branch will attempt to sign in the user silently.  Cross-device
@@ -104,10 +131,10 @@ public class MainActivity extends AppCompatActivity  implements
                 @Override
                 public void onResult(GoogleSignInResult googleSignInResult) {
                     hideProgressDialog();
-       //             handleSignInResult(googleSignInResult);
+                   handleSignInResult(googleSignInResult);
                 }
             });
-        }
+       }
     }
 
 
@@ -118,7 +145,7 @@ public class MainActivity extends AppCompatActivity  implements
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-         //   handleSignInResult(result);
+            handleSignInResult(result);
         }
     }
 
@@ -127,39 +154,35 @@ public class MainActivity extends AppCompatActivity  implements
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            String idToken = acct.getIdToken();
+            //String idToken = acct.getIdToken();
             /* Send User ID to Server
             * user's email address with getEmail,
             * the user's Google ID (for client-side use) with getId,
              * and an ID token for the user with with getIdToken
             * */
-
+            String userName = acct.getId();
+            String email = acct.getEmail();
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.server_client_id))
                     .build();
+            Log.d(TAG,acct.toString());
 
-
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpPost httpPost = new HttpPost("https://yourbackend.example.com/tokensignin");
+            final HttpClient httpClient = new DefaultHttpClient();
+            final HttpPost httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/register");
 
             try {
                 List nameValuePairs = new ArrayList(1);
-                nameValuePairs.add(new BasicNameValuePair("idToken", idToken));
+                nameValuePairs.add(new BasicNameValuePair("username", userName));
+                nameValuePairs.add(new BasicNameValuePair("token", userName));
+                nameValuePairs.add(new BasicNameValuePair("email", email));
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+                new Register().execute(httpClient,httpPost);
+                mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
+                updateUI(true);
 
-                HttpResponse response = httpClient.execute(httpPost);
-                int statusCode = response.getStatusLine().getStatusCode();
-                final String responseBody = EntityUtils.toString(response.getEntity());
-                Log.i(TAG, "Signed in as: " + responseBody);
-            } catch (ClientProtocolException e) {
-                Log.e(TAG, "Error sending ID token to backend.", e);
-            } catch (IOException e) {
+            }  catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
             }
-
-
-            mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-            updateUI(true);
         } else {
             // Signed out, show unauthenticated UI.
             updateUI(false);
