@@ -24,9 +24,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -73,6 +77,8 @@ public class MainActivity extends AppCompatActivity  implements
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
 
+    public final static String EXTRA_MESSAGE = "com.group28.android.smartshopper.HOMEMESSAGE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,12 +122,14 @@ public class MainActivity extends AppCompatActivity  implements
         super.onStart();
 
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        final GoogleSignInResult result;
         if (opr.isDone()) {
             // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
             // and the GoogleSignInResult will be available instantly.
             Log.d(TAG, "Got cached sign-in");
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
+            result = opr.get();
+          //  handleSignInResult(result);
+            loadHomePage(result);
         } else {
             // If the user has not previously signed in on this device or the sign-in has expired,
             // this asynchronous branch will attempt to sign in the user silently.  Cross-device
@@ -132,9 +140,13 @@ public class MainActivity extends AppCompatActivity  implements
                 public void onResult(GoogleSignInResult googleSignInResult) {
                     hideProgressDialog();
                    handleSignInResult(googleSignInResult);
+                 //   loadHomePage(googleSignInResult);
                 }
+
             });
        }
+
+
     }
 
 
@@ -146,6 +158,7 @@ public class MainActivity extends AppCompatActivity  implements
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
+            loadHomePage(result);
         }
     }
 
@@ -160,7 +173,7 @@ public class MainActivity extends AppCompatActivity  implements
             * the user's Google ID (for client-side use) with getId,
              * and an ID token for the user with with getIdToken
             * */
-            String userName = acct.getId();
+            String userName = acct.getDisplayName();
             String email = acct.getEmail();
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.server_client_id))
@@ -175,13 +188,24 @@ public class MainActivity extends AppCompatActivity  implements
                 nameValuePairs.add(new BasicNameValuePair("username", userName));
                 nameValuePairs.add(new BasicNameValuePair("token", userName));
                 nameValuePairs.add(new BasicNameValuePair("email", email));
-                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                JSONObject jsonObj = new JSONObject();
+                jsonObj.put("username", userName);
+                jsonObj.put("token", userName);
+                jsonObj.put("email", email);
+                StringEntity entity = new StringEntity(jsonObj.toString(), HTTP.UTF_8);
+                entity.setContentType("application/json");
+                httpPost.setEntity(entity);
+                //httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 new Register().execute(httpClient,httpPost);
-                mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-                updateUI(true);
+                // Commenting Default SignIn UI code
+                // mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
+                // updateUI(true);
 
             }  catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         } else {
             // Signed out, show unauthenticated UI.
@@ -189,6 +213,11 @@ public class MainActivity extends AppCompatActivity  implements
         }
     }
 
+    public void loadHomePage(GoogleSignInResult googleSignInResult){
+        Intent homeIntent = new Intent(this, HomeActivity.class);
+        homeIntent.putExtra(EXTRA_MESSAGE, googleSignInResult.getSignInAccount().getDisplayName()); // Adding message to invoke HomeActivity
+        startActivity(homeIntent);
+    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
