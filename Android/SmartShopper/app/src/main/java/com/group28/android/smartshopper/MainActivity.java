@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Debug;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -36,10 +38,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.tag;
+
 
 public class MainActivity extends AppCompatActivity  implements
-        GoogleApiClient.OnConnectionFailedListener,
+        GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         View.OnClickListener {
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
 
     public  class Register extends AsyncTask<Object, Void, Object> {
         protected Boolean doInBackground(Object... param) {
@@ -111,9 +125,14 @@ public class MainActivity extends AppCompatActivity  implements
         signInButton.setScopes(gso.getScopeArray());
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+              //  .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addOnConnectionFailedListener(this)
+                .addConnectionCallbacks(this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+        mGoogleApiClient.connect();
+        Log.i(TAG,mGoogleApiClient.isConnected() + "");
+       // App.getInstance().setClient(mGoogleApiClient);
 
     }
 
@@ -129,7 +148,7 @@ public class MainActivity extends AppCompatActivity  implements
             Log.d(TAG, "Got cached sign-in");
             result = opr.get();
           //  handleSignInResult(result);
-            loadHomePage(result);
+            loadHomePage();
         } else {
             // If the user has not previously signed in on this device or the sign-in has expired,
             // this asynchronous branch will attempt to sign in the user silently.  Cross-device
@@ -146,7 +165,13 @@ public class MainActivity extends AppCompatActivity  implements
             });
        }
 
+        mGoogleApiClient.connect();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
     }
 
 
@@ -158,7 +183,9 @@ public class MainActivity extends AppCompatActivity  implements
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
-            loadHomePage(result);
+            if(result.isSuccess()) {
+                loadHomePage();
+            }
         }
     }
 
@@ -213,9 +240,9 @@ public class MainActivity extends AppCompatActivity  implements
         }
     }
 
-    public void loadHomePage(GoogleSignInResult googleSignInResult){
+    public void loadHomePage(){
         Intent homeIntent = new Intent(this, HomeActivity.class);
-        homeIntent.putExtra(EXTRA_MESSAGE, googleSignInResult.getSignInAccount().getDisplayName()); // Adding message to invoke HomeActivity
+     //   homeIntent.putExtra(EXTRA_MESSAGE, googleSignInResult.getSignInAccount().getDisplayName()); // Adding message to invoke HomeActivity
         startActivity(homeIntent);
     }
 

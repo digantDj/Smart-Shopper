@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "892000906369",
-    "project_id": "smart-shopper-a01c3"
+    "project_number": "331443459801",
+    "project_id": "smart-shopper-f68b5"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:892000906369:android:9dca047c4c618926",
+        "mobilesdk_app_id": "1:331443459801:android:9dca047c4c618926",
         "android_client_info": {
           "package_name": "com.group28.android.smartshopper"
         }
       },
       "oauth_client": [
         {
-          "client_id": "892000906369-q5ohrkei5gdbnfkaprpiv7f7m67q5nl4.apps.googleusercontent.com",
+          "client_id": "331443459801-41brf50bo1at3cqqgv6fqbnbn3m8dtkl.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.group28.android.smartshopper",
-            "certificate_hash": "730810F32E38A375E57D3A1B287A6BD8D64FA55E"
+            "certificate_hash": "1660B954152C785E42DFD79A50C37A3E6AD6E6A3"
           }
         },
         {
-          "client_id": "892000906369-ue7mngbih05b3ftbf3s0bukorn1pavpo.apps.googleusercontent.com",
+          "client_id": "331443459801-o3kct85eo4h5qramvrv8qlf7aspnuika.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCj3F0Q9jqEVjjA1nOoH_sDbXERgL_5e_8"
+          "current_key": "AIzaSyDMZAYX5wmUwE6C8icYK9J4TNCIGWJCTs0"
         }
       ],
       "services": {
