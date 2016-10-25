@@ -1,1 +1,4 @@
 *.DS_Store
+Android/SmartShopper/app/google-services.json
+Android/SmartShopper/app/src/main/res/values/strings.xml
+Android/SmartShopper/.idea/.name
