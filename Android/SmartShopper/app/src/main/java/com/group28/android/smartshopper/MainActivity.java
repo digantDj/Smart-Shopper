@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity  implements
             Log.d(TAG, "Got cached sign-in");
             result = opr.get();
           //  handleSignInResult(result);
-            loadHomePage();
+            loadHomePage(result);
         } else {
             // If the user has not previously signed in on this device or the sign-in has expired,
             // this asynchronous branch will attempt to sign in the user silently.  Cross-device
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity  implements
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
             if(result.isSuccess()) {
-                loadHomePage();
+                loadHomePage(result);
             }
         }
     }
@@ -240,9 +240,15 @@ public class MainActivity extends AppCompatActivity  implements
         }
     }
 
-    public void loadHomePage(){
+    public void loadHomePage(GoogleSignInResult googleSignInResult){
         Intent homeIntent = new Intent(this, HomeActivity.class);
      //   homeIntent.putExtra(EXTRA_MESSAGE, googleSignInResult.getSignInAccount().getDisplayName()); // Adding message to invoke HomeActivity
+        homeIntent.putExtra("userName",googleSignInResult.getSignInAccount().getDisplayName());
+        homeIntent.putExtra("userEmail",googleSignInResult.getSignInAccount().getEmail());
+
+       //Log.i("adsadasd",googleSignInResult.getSignInAccount().getPhotoUrl().toString());
+        //homeIntent.putExtra("userPhoto",googleSignInResult.getSignInAccount().getPhotoUrl().toString());
+
         startActivity(homeIntent);
     }
 
