@@ -1,10 +1,9 @@
-package com.group28.android.smartshopper;
+package com.group28.android.smartshopper.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,10 +23,10 @@ import com.google.android.gms.common.api.Status;
 import com.group28.android.smartshopper.Database.DBHelper;
 import com.group28.android.smartshopper.Model.Memo;
 import com.group28.android.smartshopper.Model.User;
+import com.group28.android.smartshopper.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -40,10 +39,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
-import static android.R.attr.tag;
-
 
 public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,

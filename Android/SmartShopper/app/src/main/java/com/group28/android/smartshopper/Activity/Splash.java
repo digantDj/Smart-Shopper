@@ -1,10 +1,12 @@
-package com.group28.android.smartshopper;
+package com.group28.android.smartshopper.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+
+import com.group28.android.smartshopper.R;
 
 /**
  * Created by deepika on 9/23/2016.
