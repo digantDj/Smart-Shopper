@@ -41,7 +41,7 @@ public class MemoActivity extends Activity implements AdapterView.OnItemSelected
             e.printStackTrace();
         }
 
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.menu_items, R.layout.activity_memoSpinnerView);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.menu_items, R.layout.activity_memospinnerview);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
@@ -56,7 +56,7 @@ public class MemoActivity extends Activity implements AdapterView.OnItemSelected
                 Toast.makeText(MemoActivity.this, content, Toast.LENGTH_LONG).show();
                 Toast.makeText(MemoActivity.this, category, Toast.LENGTH_SHORT).show();
                 content = editText.getText().toString();
-                memo.setMemoId(UUID.randomUUID().toString());
+               // memo.setMemoId(UUID.randomUUID().toString());
                 memo.setCategory(category);
                 memo.setContent(content);
                 memo.setType("PERSONAL");
