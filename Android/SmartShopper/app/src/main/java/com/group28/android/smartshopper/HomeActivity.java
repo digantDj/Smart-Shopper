@@ -28,8 +28,13 @@ import android.view.MenuItem;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +46,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.widget.ListAdapter;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -52,6 +58,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+
+import org.w3c.dom.Text;
 
 import static android.R.attr.data;
 import static android.R.attr.tag;
@@ -65,6 +73,11 @@ public class HomeActivity extends AppCompatActivity
     private ListView lv;
     // Search EditText
     EditText inputSearch;
+
+    // Navigation Header
+    TextView navUserName;
+    TextView navEmail;
+    ImageView navImage;
 
     GoogleApiClient mGoogleApiClient;
 
@@ -113,15 +126,30 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //------------------------------------
 
+
+// --------------------------
+        // Setting UserName in Navigation Menu
+        View headerLayout = navigationView.getHeaderView(0); // 0-index header
+        navUserName = (TextView) headerLayout.findViewById(R.id.userName);
+        navUserName.setText("Hello " + getIntent().getStringExtra("userName"));
+
+        navEmail = (TextView) headerLayout.findViewById(R.id.textView);
+        navEmail.setText(getIntent().getStringExtra("userEmail"));
+
+/*
+        String userPhotoUrl = getIntent().getStringExtra("userPhoto");
+        Uri photoUri = Uri.parse(userPhotoUrl);
+        navImage = (ImageView) headerLayout.findViewById(R.id.imageView);
+        navImage.setImageURI(photoUri);
+*/
 
 
         // Listview Data
         String products[] = {"Dell Inspiron", "HTC One X", "HTC Wildfire S", "HTC Sense", "HTC Sensation XE",
                 "iPhone 4S", "Samsung Galaxy Note 800",
                 "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro", "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro"
-    };
+        };
 
         // Bind to our new adapter.
         //setListAdapter(adapter);
