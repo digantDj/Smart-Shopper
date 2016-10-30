@@ -28,12 +28,15 @@ public class DBHelper extends SQLiteOpenHelper {
     private String userTableName;
 
     private String memoCOL1 = "memoId";
-    private String memoCOL2 = "category";
-    private String memoCOL3 = "content";
-    private String memoCOL4 = "type";
-    private String memoCOL5 = "status";
-    private String memoCOL6 = "creationDate";
-    private String memoCOL7 = "updateDate";
+    private String memoCOL2 = "userId";
+    private String memoCOL3 = "groupId";
+    private String memoCOL4 = "category";
+    private String memoCOL5 = "content";
+    private String memoCOL6 = "type";
+    private String memoCOL7 = "status";
+    private String memoCOL8 = "creationDate";
+    private String memoCOL9 = "updateDate";
+
 
 
     private String userCOL1 = "userId";
@@ -63,23 +66,25 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreateMemoTable(String tableName) throws SQLiteException {
         memoTableName = tableName;
         db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ( "
-                + memoCOL1 + " text, "
-                + memoCOL2 + " text, "
-                + memoCOL3 + " text, "
+                + memoCOL1 + " INTEGER AUTOINCREMENT, "
+                + memoCOL2 + " INTEGER NOT NULL, "
+                + memoCOL3 + " INTEGER NOT NULL, "
                 + memoCOL4 + " text, "
                 + memoCOL5 + " text, "
                 + memoCOL6 + " text, "
-                + memoCOL7 + " text)" );
+                + memoCOL7 + " text, "
+                + memoCOL8 + " text, "
+                + memoCOL9 + " text)" );
     }
 
     public void onCreateUserTable(String tableName) throws SQLiteException {
         userTableName = tableName;
         db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ( "
-                + userCOL1 + " text, "
+                + userCOL1 + " INTEGER AUTOINCREMENT, "
                 + userCOL2 + " text, "
                 + userCOL3 + " text, "
                 + userCOL4 + " text, "
-                + userCOL5 + " text, "
+                + userCOL5 + " INTEGER NOT NULL, "
                 + userCOL6 + " text)" );
     }
 
@@ -128,16 +133,17 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public List<Memo> getMemos () {
+    public List<Memo> getMemos (int userId) {
         List<Memo> memos = new ArrayList<Memo>();
         Cursor cursor = null;
-        String selectQuery = "SELECT  * FROM " + memoTableName + " ORDER BY " + memoCOL7 + " DESC";;
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT  * FROM " + memoTableName + " WHERE " + memoCOL2 + " = "+ userId +"ORDER BY " + memoCOL9 + " DESC";
         try {
             cursor = db.rawQuery(selectQuery, null);
             db.setTransactionSuccessful();
             while (cursor.moveToNext()) {
                 Memo memo = new Memo();
-                memo.setMemoId(cursor.getString(cursor.getColumnIndex(memoCOL1)));
+                memo.setMemoId(cursor.getInt(cursor.getColumnIndex(memoCOL1)));
                 memo.setCategory(cursor.getString(cursor.getColumnIndex(memoCOL2)));
                 memo.setContent(cursor.getString(cursor.getColumnIndex(memoCOL3)));
                 memo.setType(cursor.getString(cursor.getColumnIndex(memoCOL4)));
@@ -151,6 +157,23 @@ public class DBHelper extends SQLiteOpenHelper {
             return null;
         }
 
+    }
+
+    public int getUserID(String email){
+        Cursor cursor = null;
+        String selectQuery = "SELECT  * FROM " + userTableName + " WHERE " + userCOL3 + " = "+ email;
+        db = dbHelper.getReadableDatabase();
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+            db.setTransactionSuccessful();
+            while (cursor.moveToNext()) {
+                return cursor.getInt(cursor.getColumnIndex(userCOL1));
+            }
+        } catch (Exception e) {
+            //report problem
+            return -1;
+        }
+        return -1;
     }
 
 

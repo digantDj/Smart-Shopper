@@ -33,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -58,6 +59,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.group28.android.smartshopper.Database.DBHelper;
+import com.group28.android.smartshopper.Model.Memo;
 
 import org.w3c.dom.Text;
 
@@ -80,7 +83,8 @@ public class HomeActivity extends AppCompatActivity
     ImageView navImage;
 
     GoogleApiClient mGoogleApiClient;
-
+    DBHelper dbHelper;
+    String[] memosList;
     // ArrayList for Listview
     ArrayList<HashMap<String, String>> productList;
 
@@ -151,6 +155,21 @@ public class HomeActivity extends AppCompatActivity
                 "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro", "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro"
         };
 
+        // Querying Memos
+        try {
+            dbHelper = DBHelper.getInstance(this.getApplicationContext());
+            List<Memo> memos = dbHelper.getMemos(dbHelper.getUserID(getIntent().getStringExtra("userEmail")));
+            memosList = new String[memos.size()];
+            int i=0;
+            for(Memo memo : memos){
+                memosList[i++]=memo.getCategory();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         // Bind to our new adapter.
         //setListAdapter(adapter);
         //ArrayAdapter<String> adapter =new ArrayAdapter<String>(this, R.layout.reminder_row, R.id.text1, items);
@@ -158,7 +177,7 @@ public class HomeActivity extends AppCompatActivity
         inputSearch = (EditText) findViewById(R.id.inputSearch);
 
 
-        adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_name, products);
+        adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_name, memosList);
         lv.setAdapter(adapter);
 
         inputSearch.addTextChangedListener(new TextWatcher() {
