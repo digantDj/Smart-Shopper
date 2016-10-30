@@ -21,6 +21,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.group28.android.smartshopper.Database.DBHelper;
+import com.group28.android.smartshopper.Model.Memo;
+import com.group28.android.smartshopper.Model.User;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -38,6 +41,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.R.attr.tag;
 
 
@@ -93,6 +97,12 @@ public class MainActivity extends AppCompatActivity  implements
 
     public final static String EXTRA_MESSAGE = "com.group28.android.smartshopper.HOMEMESSAGE";
 
+    private static DBHelper dbHelper;
+    private User dbUser;
+    private static final String USERTABLE = "user";
+    private static final String MEMOTABLE = "memo";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,6 +144,17 @@ public class MainActivity extends AppCompatActivity  implements
         Log.i(TAG,mGoogleApiClient.isConnected() + "");
        // App.getInstance().setClient(mGoogleApiClient);
 
+        try {
+            // Get Instance of DB
+
+            dbHelper = dbHelper.getInstance(this.getApplicationContext());
+            dbHelper.onCreateUserTable(USERTABLE);
+            dbHelper.onCreateMemoTable(MEMOTABLE);
+            dbUser = new User();
+        }
+        catch(IOException e){
+            Log.e("error","DBHelper getInstance error");
+        }
     }
 
     @Override
@@ -225,10 +246,19 @@ public class MainActivity extends AppCompatActivity  implements
                 httpPost.setEntity(entity);
                 //httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 new Register().execute(httpClient,httpPost);
-                // Commenting Default SignIn UI code
-                // mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-                // updateUI(true);
 
+                // Store User details in Local DB
+                dbUser.setUserName(userName);
+                dbUser.setEmail(email);
+                dbUser.setToken(userName);
+                dbHelper.insertUser(dbUser,USERTABLE);
+                // Creating DUMMY data
+                Memo dummyMemo = new Memo();
+                dummyMemo.setCategory("Grocery");
+                dummyMemo.setContent("Milk, Eggs");
+                dummyMemo.setUserId(dbHelper.getUserID(email));
+                dummyMemo.setStatus("Active");
+                dbHelper.insertMemo(dummyMemo, MEMOTABLE);
             }  catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
             } catch (JSONException e) {

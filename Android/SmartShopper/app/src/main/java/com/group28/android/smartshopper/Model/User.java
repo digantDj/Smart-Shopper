@@ -5,17 +5,17 @@ package com.group28.android.smartshopper.Model;
  */
 
 public class User {
-    private String userId;
+    private int userId;
     private String userName;
     private String email;
     private String token;
-    private String groupId;
+    private int groupId;
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
-    public String getUserId(){
+    public int getUserId(){
          return userId;
     }
 
@@ -43,11 +43,11 @@ public class User {
         return token;
     }
 
-    public void setGroupId(String groupId) {
+    public void setGroupId(int groupId) {
         this.groupId = groupId;
     }
 
-    public String getGroupId(){
+    public int getGroupId(){
         return groupId;
     }
 

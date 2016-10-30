@@ -5,17 +5,35 @@ package com.group28.android.smartshopper.Model;
  */
 
 public class Memo {
-    private String memoId;
+    private int memoId;
+    private int userId;
+    private int groupId;
     private String category;
     private String content;
     private String status;
     private String type;
 
-    public void setMemoId(String memoId) {
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public void setMemoId(int memoId) {
         this.memoId = memoId;
     }
 
-    public String getMemoId(){
+    public int getMemoId(){
          return memoId;
     }
 
