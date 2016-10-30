@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
+import android.util.Log;
 
 import com.group28.android.smartshopper.Model.Memo;
 import com.group28.android.smartshopper.Model.User;
@@ -17,6 +18,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static android.R.attr.name;
 
 /**
  * Created by Mihir on 9/30/2016.
@@ -66,7 +69,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreateMemoTable(String tableName) throws SQLiteException {
         memoTableName = tableName;
         db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ( "
-                + memoCOL1 + " INTEGER AUTOINCREMENT, "
+                + memoCOL1 + " INTEGER PRIMARY KEY, "
                 + memoCOL2 + " INTEGER NOT NULL, "
                 + memoCOL3 + " INTEGER NOT NULL, "
                 + memoCOL4 + " text, "
@@ -80,7 +83,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreateUserTable(String tableName) throws SQLiteException {
         userTableName = tableName;
         db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ( "
-                + userCOL1 + " INTEGER AUTOINCREMENT, "
+                + userCOL1 + " INTEGER PRIMARY KEY, "
                 + userCOL2 + " text, "
                 + userCOL3 + " text, "
                 + userCOL4 + " text, "
@@ -101,13 +104,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(memoCOL1, memo.getMemoId());
-        contentValues.put(memoCOL2, memo.getCategory());
-        contentValues.put(memoCOL3, memo.getContent());
-        contentValues.put(memoCOL4, memo.getType());
-        contentValues.put(memoCOL5, memo.getStatus());
-        contentValues.put(memoCOL6,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        contentValues.put(memoCOL7,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        contentValues.put(memoCOL2, memo.getUserId());
+        contentValues.put(memoCOL3, memo.getGroupId());
+        contentValues.put(memoCOL4, memo.getCategory());
+        contentValues.put(memoCOL5, memo.getContent());
+        contentValues.put(memoCOL6, memo.getType());
+        contentValues.put(memoCOL7, memo.getStatus());
+        contentValues.put(memoCOL8,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        contentValues.put(memoCOL9,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         long result = db.insert(tableName, null, contentValues);
+
         if (result == -1) {
             return false;
         } else {
@@ -137,43 +143,48 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Memo> memos = new ArrayList<Memo>();
         Cursor cursor = null;
         db = dbHelper.getReadableDatabase();
-        String selectQuery = "SELECT  * FROM " + memoTableName + " WHERE " + memoCOL2 + " = "+ userId +"ORDER BY " + memoCOL9 + " DESC";
+        String selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL2 + "` = "+ userId +" ORDER BY " + memoCOL9 + " DESC";
+        Log.d("select getMemos query",selectQuery);
         try {
             cursor = db.rawQuery(selectQuery, null);
-            db.setTransactionSuccessful();
+     //       db.setTransactionSuccessful();
             while (cursor.moveToNext()) {
                 Memo memo = new Memo();
                 memo.setMemoId(cursor.getInt(cursor.getColumnIndex(memoCOL1)));
-                memo.setCategory(cursor.getString(cursor.getColumnIndex(memoCOL2)));
-                memo.setContent(cursor.getString(cursor.getColumnIndex(memoCOL3)));
-                memo.setType(cursor.getString(cursor.getColumnIndex(memoCOL4)));
-                memo.setStatus(cursor.getString(cursor.getColumnIndex(memoCOL5)));
+                memo.setCategory(cursor.getString(cursor.getColumnIndex(memoCOL4)));
+                memo.setContent(cursor.getString(cursor.getColumnIndex(memoCOL5)));
+                memo.setType(cursor.getString(cursor.getColumnIndex(memoCOL6)));
+                memo.setStatus(cursor.getString(cursor.getColumnIndex(memoCOL7)));
                 memos.add(memo);
             }
         } catch (Exception e) {
             //report problem
+            memos = null;
         } finally {
             cursor.close();
-            return null;
+            return memos;
         }
 
     }
 
     public int getUserID(String email){
         Cursor cursor = null;
-        String selectQuery = "SELECT  * FROM " + userTableName + " WHERE " + userCOL3 + " = "+ email;
-        db = dbHelper.getReadableDatabase();
+        //String selectQuery = "SELECT  * FROM " + userTableName + " WHERE " + userCOL3 + " = `"+ email + "`";
+        String selectQuery = "SELECT * FROM " + userTableName + " WHERE `"+ userCOL3 +"` = '"+ email + "'";
+        int result = -1;
+        Log.d("select getUserID query",selectQuery);
+       // db = dbHelper.getReadableDatabase();
         try {
             cursor = db.rawQuery(selectQuery, null);
-            db.setTransactionSuccessful();
+          //  db.setTransactionSuccessful();
             while (cursor.moveToNext()) {
-                return cursor.getInt(cursor.getColumnIndex(userCOL1));
+                result = cursor.getInt(cursor.getColumnIndex(userCOL1));
             }
         } catch (Exception e) {
             //report problem
-            return -1;
+
         }
-        return -1;
+        return result;
     }
 
 

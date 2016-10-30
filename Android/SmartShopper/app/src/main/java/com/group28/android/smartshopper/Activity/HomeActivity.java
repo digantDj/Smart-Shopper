@@ -89,8 +89,11 @@ public class HomeActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+               // Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                  //      .setAction("Action", null).show();
+
+                Intent createMemoIntent = new Intent(HomeActivity.this, MemoActivity.class);
+                startActivity(createMemoIntent);
             }
         });
 
@@ -139,6 +142,8 @@ public class HomeActivity extends AppCompatActivity
             }
 
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch(NullPointerException e){
             e.printStackTrace();
         }
 
