@@ -69,7 +69,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreateMemoTable(String tableName) throws SQLiteException {
         memoTableName = tableName;
         db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ( "
-                + memoCOL1 + " INTEGER PRIMARY KEY, "
+                + memoCOL1 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + memoCOL2 + " INTEGER NOT NULL, "
                 + memoCOL3 + " INTEGER NOT NULL, "
                 + memoCOL4 + " text, "
@@ -103,7 +103,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public boolean insertMemo(Memo memo, String tableName) {
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(memoCOL1, memo.getMemoId());
+        //contentValues.put(memoCOL1, memo.getMemoId());
         contentValues.put(memoCOL2, memo.getUserId());
         contentValues.put(memoCOL3, memo.getGroupId());
         contentValues.put(memoCOL4, memo.getCategory());
