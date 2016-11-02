@@ -7,6 +7,7 @@ MONGODB_PORT = 27017
 DB = 'mc'
 USERS_COLLECTION = 'users'
 MEMO_COLLECTION = 'memos'
+GROUP_MEMO_COLLECTION = 'groupmemos'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -37,6 +38,20 @@ class Memo(Document):
         }
     }
 
+@conn.register
+class GroupMemo(Document):
+    __database__ = DB
+    __collection__ = GROUP_MEMO_COLLECTION
+    structure = {
+        "userid" : unicode,
+		"groupid" : unicode,
+		"category" : unicode,
+		"content" : unicode,
+		"status" : unicode
+		"type" : unicode
+
+    }
+	
 
 @auth.verify_token
 def verify_token(token):
@@ -73,6 +88,27 @@ def register():
     except Exception as e:
         print e.message
         return Response("Error occured while registering user.")
+		
+		
+@app.route("/create_memo", methods=["POST"], strict_slashes=False)
+def create_memo():
+    request_incoming_json = request.get_json()
+    if not request_incoming_json:
+        return abort(400)
+    try:
+        memo = conn.GroupMemo()
+        memo["userid"] = request_incoming_json.get("username")
+        memo["groupid"] = request_incoming_json.get("groupid")
+        memo["category"] = request_incoming_json.get("category")
+		memo["content"] = request_incoming_json.get("content")
+		memo["status"] = request_incoming_json.get("status")
+		memo["type"] = request_incoming_json.get("type")
+        memo.save()
+        return jsonify({"message": "Success"})
+
+    except Exception as e:
+        print e.message
+        return Response("Error occured while creating memo.")			
 
 
 @app.route("/resource/memo_details", strict_slashes=False)
