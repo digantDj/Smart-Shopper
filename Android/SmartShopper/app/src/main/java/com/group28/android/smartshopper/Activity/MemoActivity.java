@@ -16,7 +16,6 @@ import com.group28.android.smartshopper.Model.Memo;
 import com.group28.android.smartshopper.R;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class MemoActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
@@ -59,7 +58,7 @@ public class MemoActivity extends Activity implements AdapterView.OnItemSelected
                 content = editText.getText().toString();
                // memo.setMemoId(UUID.randomUUID().toString());
                 memo.setCategory(category);
-                memo.setUserId(0);
+                memo.setUserId(0); //To Do - Pass current logged in user id in intent
                 memo.setContent(content);
                 memo.setType("PERSONAL");
                 memo.setStatus("ACTIVE");

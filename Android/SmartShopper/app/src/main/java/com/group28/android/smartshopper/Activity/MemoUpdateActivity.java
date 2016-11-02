@@ -22,7 +22,7 @@ public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSe
     DBHelper dbHelper;
     String category;
     String content;
-    Button save;
+    Button update;
     Memo memo;
     EditText editText;
     Intent intent;
@@ -30,12 +30,13 @@ public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_memo);
-        save = (Button) findViewById(R.id.button);
+        setContentView(R.layout.activity_memo_update);
+        update = (Button) findViewById(R.id.button);
         editText = (EditText)findViewById(R.id.editText);
         //memo = new Memo();
         intent = getIntent();
-        memo = intent.getParcelableExtra("memo");
+        String[] itemDetails = intent.getStringExtra("memoId").toString().split(" ");
+        int memoId = Integer.parseInt(itemDetails[0]);
 
         try {
             dbHelper = DBHelper.getInstance(this);
@@ -44,6 +45,7 @@ public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSe
             e.printStackTrace();
         }
 
+        memo = dbHelper.getMemoWithMemoId(memoId);
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.menu_items, R.layout.activity_memospinnerview);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 
@@ -55,10 +57,7 @@ public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSe
         editText.setText(memo.getContent());
 
 
-
-
-
-        save.setOnClickListener(new View.OnClickListener() {
+        update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MemoUpdateActivity.this, content, Toast.LENGTH_LONG).show();
@@ -66,15 +65,18 @@ public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSe
                 content = editText.getText().toString();
                // memo.setMemoId(UUID.randomUUID().toString());
                 memo.setCategory(category);
-                memo.setUserId(0);
                 memo.setContent(content);
-                memo.setType("PERSONAL");
-                memo.setStatus("ACTIVE");
+                //memo.setType("PERSONAL");
+                //memo.setStatus("ACTIVE");
 
-                if (dbHelper.insertMemo(memo, "memo")) {
-                    Toast.makeText(MemoUpdateActivity.this, "Insert Successful", Toast.LENGTH_SHORT).show();
+                if (dbHelper.updateMemo(memo, "memo")) {
+                        //Toast.makeText(MemoActivity.this, "Insert Successful", Toast.LENGTH_SHORT).show();
+                        // Redirect User to Home Screen upon successful insertion
+                        Intent i = new Intent(MemoUpdateActivity.this, MainActivity.class);
+                        startActivity(i);
+                        finish();
+                    }
                 }
-            }
         });
 
     }

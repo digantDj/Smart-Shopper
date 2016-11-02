@@ -108,7 +108,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(memoCOL5, memo.getContent());
         contentValues.put(memoCOL6, memo.getType());
         contentValues.put(memoCOL7, memo.getStatus());
-        //contentValues.put(memoCOL8,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        contentValues.put(memoCOL8,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         contentValues.put(memoCOL9,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         long result = db.insert(tableName, null, contentValues);
 
@@ -129,9 +129,9 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(memoCOL5, memo.getContent());
         contentValues.put(memoCOL6, memo.getType());
         contentValues.put(memoCOL7, memo.getStatus());
-        contentValues.put(memoCOL8,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        //contentValues.put(memoCOL8,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         contentValues.put(memoCOL9,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-        long result = db.update(tableName,contentValues,"memoid=?",new String[]{memo.getMemoId()+""});
+        long result = db.update(tableName,contentValues,memoCOL1+"="+memo.getMemoId(),null);
 
         if (result == -1) {
             return false;
@@ -163,7 +163,7 @@ public class DBHelper extends SQLiteOpenHelper {
         List<Memo> memos = new ArrayList<Memo>();
         Cursor cursor = null;
         db = dbHelper.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL2 + "` = "+ userId +" ORDER BY " + memoCOL9 + " DESC";
+        String selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL2 + "` = "+ userId +" ORDER BY " + memoCOL9;
         Log.d("select getMemos query",selectQuery);
         try {
             cursor = db.rawQuery(selectQuery, null);
@@ -186,6 +186,35 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
     }
+
+
+    public Memo getMemoWithMemoId (int memoId) {
+        Memo memo = null;
+        Cursor cursor = null;
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL1 + "` = "+ memoId;
+        Log.d("getMemoWithMemoId query",selectQuery);
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+            memo = new Memo();
+            while(cursor.moveToNext()) {
+                memo.setMemoId(cursor.getInt(cursor.getColumnIndex(memoCOL1)));
+                memo.setCategory(cursor.getString(cursor.getColumnIndex(memoCOL4)));
+                memo.setContent(cursor.getString(cursor.getColumnIndex(memoCOL5)));
+                memo.setType(cursor.getString(cursor.getColumnIndex(memoCOL6)));
+                memo.setStatus(cursor.getString(cursor.getColumnIndex(memoCOL7)));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            memo = null;
+        } finally {
+            cursor.close();
+            return memo;
+        }
+
+    }
+
+
 
     public int getUserID(String email){
         Cursor cursor = null;
