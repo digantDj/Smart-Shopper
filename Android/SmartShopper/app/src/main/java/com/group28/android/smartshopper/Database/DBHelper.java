@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static android.R.attr.name;
-
 /**
  * Created by Mihir on 9/30/2016.
  */
@@ -110,9 +108,30 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(memoCOL5, memo.getContent());
         contentValues.put(memoCOL6, memo.getType());
         contentValues.put(memoCOL7, memo.getStatus());
-        contentValues.put(memoCOL8,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        //contentValues.put(memoCOL8,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         contentValues.put(memoCOL9,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         long result = db.insert(tableName, null, contentValues);
+
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean updateMemo(Memo memo, String tableName) {
+
+        ContentValues contentValues = new ContentValues();
+        //contentValues.put(memoCOL1, memo.getMemoId());
+        //contentValues.put(memoCOL2, memo.getUserId());
+        //contentValues.put(memoCOL3, memo.getGroupId());
+        contentValues.put(memoCOL4, memo.getCategory());
+        contentValues.put(memoCOL5, memo.getContent());
+        contentValues.put(memoCOL6, memo.getType());
+        contentValues.put(memoCOL7, memo.getStatus());
+        contentValues.put(memoCOL8,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        contentValues.put(memoCOL9,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        long result = db.update(tableName,contentValues,"memoid=?",new String[]{memo.getMemoId()+""});
 
         if (result == -1) {
             return false;
@@ -138,6 +157,7 @@ public class DBHelper extends SQLiteOpenHelper {
             return true;
         }
     }
+
 
     public List<Memo> getMemos (int userId) {
         List<Memo> memos = new ArrayList<Memo>();
