@@ -29,7 +29,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activity.MemoActivity">
-
+        </activity>
+        <activity android:name=".Activity.MemoUpdateActivity">
         </activity>
         <activity
             android:name=".Activity.LoginActivity"
