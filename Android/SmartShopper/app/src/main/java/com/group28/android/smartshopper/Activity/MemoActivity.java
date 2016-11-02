@@ -29,7 +29,7 @@ public class MemoActivity extends Activity implements AdapterView.OnItemSelected
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_memo);
         save = (Button) findViewById(R.id.button);
         editText = (EditText)findViewById(R.id.editText);
         memo = new Memo();
@@ -58,6 +58,7 @@ public class MemoActivity extends Activity implements AdapterView.OnItemSelected
                 content = editText.getText().toString();
                // memo.setMemoId(UUID.randomUUID().toString());
                 memo.setCategory(category);
+                memo.setUserId(0);
                 memo.setContent(content);
                 memo.setType("PERSONAL");
                 memo.setStatus("ACTIVE");
