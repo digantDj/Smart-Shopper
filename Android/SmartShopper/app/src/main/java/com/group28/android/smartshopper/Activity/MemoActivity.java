@@ -1,6 +1,7 @@
 package com.group28.android.smartshopper.Activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -53,8 +54,8 @@ public class MemoActivity extends Activity implements AdapterView.OnItemSelected
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MemoActivity.this, content, Toast.LENGTH_LONG).show();
-                Toast.makeText(MemoActivity.this, category, Toast.LENGTH_SHORT).show();
+         //       Toast.makeText(MemoActivity.this, content, Toast.LENGTH_LONG).show();
+         //       Toast.makeText(MemoActivity.this, category, Toast.LENGTH_SHORT).show();
                 content = editText.getText().toString();
                // memo.setMemoId(UUID.randomUUID().toString());
                 memo.setCategory(category);
@@ -63,7 +64,11 @@ public class MemoActivity extends Activity implements AdapterView.OnItemSelected
                 memo.setType("PERSONAL");
                 memo.setStatus("ACTIVE");
                 if (dbHelper.insertMemo(memo, "memo")) {
-                    Toast.makeText(MemoActivity.this, "Insert Successful", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MemoActivity.this, "Insert Successful", Toast.LENGTH_SHORT).show();
+                    // Redirect User to Home Screen upon successful insertion
+                    Intent i = new Intent(MemoActivity.this, MainActivity.class);
+                    startActivity(i);
+                    finish();
                 }
             }
         });

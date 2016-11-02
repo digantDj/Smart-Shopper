@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.util.DebugUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -57,7 +58,7 @@ public class HomeActivity extends AppCompatActivity
 
     GoogleApiClient mGoogleApiClient;
     DBHelper dbHelper;
-    String[] memosList;
+    ArrayList<String> memosList;
     // ArrayList for Listview
     ArrayList<HashMap<String, String>> productList;
 
@@ -131,6 +132,8 @@ public class HomeActivity extends AppCompatActivity
                 "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro", "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro"
         };
 
+
+        /*
         // Querying Memos
         try {
             dbHelper = DBHelper.getInstance(this.getApplicationContext());
@@ -144,6 +147,15 @@ public class HomeActivity extends AppCompatActivity
         } catch (IOException e) {
             e.printStackTrace();
         } catch(NullPointerException e){
+            e.printStackTrace();
+        }
+
+        */
+
+        try {
+            memosList = getMemos();
+        }
+        catch(NullPointerException e){
             e.printStackTrace();
         }
 
@@ -176,10 +188,13 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void afterTextChanged(Editable arg0) {
                 // TODO Auto-generated method stub
+
             }
         });
 
     }
+
+
 
 
 
@@ -293,10 +308,46 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    // Function to retrieve Memos from DB
+    private ArrayList<String> getMemos(){
+        // Querying Memos
+        ArrayList<String> tempMemosList = new ArrayList<String>();
+        try {
+            dbHelper = DBHelper.getInstance(this.getApplicationContext());
+            List<Memo> memos = dbHelper.getMemos(dbHelper.getUserID(getIntent().getStringExtra("userEmail")));
+
+            int i=0;
+            for(Memo memo : memos){
+                tempMemosList.add(memo.getCategory());
+            }
+            return tempMemosList;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch(NullPointerException e) {
+            e.printStackTrace();
+        }
+        return tempMemosList;
+    }
+
+    // Function to update List View
+    private void updateListViewData() {
+        try {
+            ArrayList<String> newMemoList = getMemos();
+            adapter.clear();
+            adapter.addAll(newMemoList);
+            adapter.notifyDataSetChanged();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+        //Updating Memo
+        updateListViewData();
     }
 
     @Override

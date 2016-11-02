@@ -247,6 +247,7 @@ public class MainActivity extends AppCompatActivity  implements
                 dbUser.setEmail(email);
                 dbUser.setToken(userName);
                 dbHelper.insertUser(dbUser,USERTABLE);
+            /*
                 // Creating DUMMY data
                 Memo dummyMemo = new Memo();
                 dummyMemo.setCategory("Grocery");
@@ -254,6 +255,7 @@ public class MainActivity extends AppCompatActivity  implements
                 dummyMemo.setUserId(dbHelper.getUserID(email));
                 dummyMemo.setStatus("Active");
                 dbHelper.insertMemo(dummyMemo, MEMOTABLE);
+                */
             }  catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
             } catch (JSONException e) {
