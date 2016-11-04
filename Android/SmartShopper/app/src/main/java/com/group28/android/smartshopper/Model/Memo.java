@@ -7,7 +7,7 @@ package com.group28.android.smartshopper.Model;
 public class Memo {
     private int memoId;
     private int userId;
-    private int groupId;
+    //private int groupId;
     private String category;
     private String content;
     private String status;
@@ -21,14 +21,14 @@ public class Memo {
         this.userId = userId;
     }
 
-    public int getGroupId() {
+    /*public int getGroupId() {
         return groupId;
     }
 
     public void setGroupId(int groupId) {
         this.groupId = groupId;
     }
-
+*/
     public void setMemoId(int memoId) {
         this.memoId = memoId;
     }
