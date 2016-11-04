@@ -58,7 +58,7 @@ public class MemoActivity extends Activity implements AdapterView.OnItemSelected
                 content = editText.getText().toString();
                // memo.setMemoId(UUID.randomUUID().toString());
                 memo.setCategory(category);
-                memo.setUserId(0); //To Do - Pass current logged in user id in intent
+                memo.setUserId(dbHelper.getUserID(getIntent().getStringExtra("userEmail")));
                 memo.setContent(content);
                 memo.setType("PERSONAL");
                 memo.setStatus("ACTIVE");

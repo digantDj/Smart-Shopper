@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.group28.android.smartshopper.Model.Memo;
+import com.group28.android.smartshopper.Model.Participant;
 import com.group28.android.smartshopper.Model.User;
 
 import java.io.File;
@@ -46,6 +47,10 @@ public class DBHelper extends SQLiteOpenHelper {
     private String userCOL4 = "token";
     private String userCOL5 = "groupId";
     private String userCOL6 = "creationDate";
+
+    private String participantCOL1 = "memodId";
+    private String participantCOL2 = "groupId";
+    private String participantCOL3 = "email";
 
     private static SQLiteDatabase db = null;
     private Context context;
@@ -89,6 +94,14 @@ public class DBHelper extends SQLiteOpenHelper {
                 + userCOL6 + " text)" );
     }
 
+    public void onCreateParticipantsTable(String tableName) throws SQLiteException {
+        userTableName = tableName;
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ( "
+                + participantCOL1 + " INTEGER PRIMARY KEY, "
+                + participantCOL2 + " INTEGER PRIMARY KEY, "
+                + participantCOL3 + " text)" );
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
     }
@@ -103,7 +116,7 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         //contentValues.put(memoCOL1, memo.getMemoId());
         contentValues.put(memoCOL2, memo.getUserId());
-        contentValues.put(memoCOL3, memo.getGroupId());
+        contentValues.put(memoCOL3, memo.getMemoId());
         contentValues.put(memoCOL4, memo.getCategory());
         contentValues.put(memoCOL5, memo.getContent());
         contentValues.put(memoCOL6, memo.getType());
@@ -149,6 +162,20 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(userCOL4, user.getToken());
         contentValues.put(userCOL5, user.getGroupId());
         contentValues.put(userCOL6,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+
+        long result = db.insert(tableName, null, contentValues);
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean insertParticipants(Participant participant, String tableName) {
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(userCOL1, participant.getMemoId());
+        contentValues.put(userCOL3, participant.getEmail());
 
         long result = db.insert(tableName, null, contentValues);
         if (result == -1) {
