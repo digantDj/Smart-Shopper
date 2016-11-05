@@ -1,6 +1,7 @@
 package com.group28.android.smartshopper.Fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,11 +9,13 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.group28.android.smartshopper.Activity.HomeActivity;
+import com.group28.android.smartshopper.Activity.MemoUpdateActivity;
 import com.group28.android.smartshopper.Adapter.ListViewAdapter;
 import com.group28.android.smartshopper.Database.DBHelper;
 import com.group28.android.smartshopper.Model.Memo;
@@ -86,6 +89,16 @@ public class FragmentTwo extends Fragment implements SearchView.OnQueryTextListe
         listViewAdapter= new ListViewAdapter(HomeActivity.getInstance(), memosList);
         listView.setAdapter(listViewAdapter);
         listView.setTextFilterEnabled(true);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(view.getContext(), MemoUpdateActivity.class);
+                intent.putExtra("memoId", listView.getItemAtPosition(position).toString());
+                startActivity(intent);
+            }
+        });
+
         setupSearchView();
 
     }
@@ -137,7 +150,6 @@ public class FragmentTwo extends Fragment implements SearchView.OnQueryTextListe
 
             int i=0;
             for(Memo memo : memos){
-                //tempMemosList.add(memo.getMemoId()+" "+memo.getCategory());
                 tempMemosList.add(memo);
             }
             return tempMemosList;

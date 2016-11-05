@@ -17,6 +17,8 @@ import com.group28.android.smartshopper.R;
 
 import java.io.IOException;
 
+import static android.R.attr.data;
+
 public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
     DBHelper dbHelper;
@@ -35,8 +37,11 @@ public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSe
         editText = (EditText)findViewById(R.id.editText);
         //memo = new Memo();
         intent = getIntent();
-        String[] itemDetails = intent.getStringExtra("memoId").toString().split(" ");
-        int memoId = Integer.parseInt(itemDetails[0]);
+        Bundle intentData = getIntent().getExtras();
+        Memo intentMemo = (Memo) intentData.getParcelable("memo");
+        //String[] itemDetails = intent.getStringExtra("memoId").toString().split(" ");
+        // int memoId = Integer.parseInt(itemDetails[0]);
+        int memoId = intentMemo.getMemoId();
 
         try {
             dbHelper = DBHelper.getInstance(this);
