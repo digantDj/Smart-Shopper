@@ -184,11 +184,11 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<Memo> getMemos (int userId) {
+    public List<Memo> getMemos (int userId, String type) {
         List<Memo> memos = new ArrayList<Memo>();
         Cursor cursor = null;
         db = dbHelper.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL2 + "` = "+ userId +" ORDER BY " + memoCOL9;
+        String selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL2 + "` = "+ userId +" AND `" + memoCOL6 + "` = '" + type +  "' ORDER BY " + memoCOL9 + " DESC";
         Log.d("select getMemos query",selectQuery);
         try {
             cursor = db.rawQuery(selectQuery, null);

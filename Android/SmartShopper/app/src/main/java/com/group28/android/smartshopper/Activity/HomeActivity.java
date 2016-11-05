@@ -9,6 +9,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -34,6 +39,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.group28.android.smartshopper.Database.DBHelper;
+import com.group28.android.smartshopper.Fragments.FragmentOne;
+import com.group28.android.smartshopper.Fragments.FragmentTwo;
 import com.group28.android.smartshopper.Model.Memo;
 import com.group28.android.smartshopper.R;
 
@@ -47,6 +54,13 @@ import static com.group28.android.smartshopper.R.id.textView;
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         View.OnClickListener{
+
+    // Creating Instance for Tab Fragments
+    public static HomeActivity instance;
+
+    private FragmentOne fragmentOne;
+    private FragmentTwo fragmentTwo;
+    private TabLayout allTabs;
 
     ArrayAdapter<String> adapter;
     // List view
@@ -62,13 +76,17 @@ public class HomeActivity extends AppCompatActivity
     GoogleApiClient mGoogleApiClient;
     DBHelper dbHelper;
     ArrayList<String> memosList;
-    // ArrayList for Listview
-    ArrayList<HashMap<String, String>> productList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home2);
+
+        try {
+            dbHelper = DBHelper.getInstance(this.getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -103,6 +121,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -112,9 +131,6 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-
-// --------------------------
         // Setting UserName in Navigation Menu
         View headerLayout = navigationView.getHeaderView(0); // 0-index header
         navUserName = (TextView) headerLayout.findViewById(R.id.userName);
@@ -123,59 +139,24 @@ public class HomeActivity extends AppCompatActivity
         navEmail = (TextView) headerLayout.findViewById(textView);
         navEmail.setText(getIntent().getStringExtra("userEmail"));
 
-/*
-        String userPhotoUrl = getIntent().getStringExtra("userPhoto");
-        Uri photoUri = Uri.parse(userPhotoUrl);
-        navImage = (ImageView) headerLayout.findViewById(R.id.imageView);
-        navImage.setImageURI(photoUri);
-*/
-
-
-        // Listview Data
-        String products[] = {"Dell Inspiron", "HTC One X", "HTC Wildfire S", "HTC Sense", "HTC Sensation XE",
-                "iPhone 4S", "Samsung Galaxy Note 800",
-                "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro", "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro"
-        };
-
-
-        /*
-        // Querying Memos
-        try {
-            dbHelper = DBHelper.getInstance(this.getApplicationContext());
-            List<Memo> memos = dbHelper.getMemos(dbHelper.getUserID(getIntent().getStringExtra("userEmail")));
-            memosList = new String[memos.size()];
-            int i=0;
-            for(Memo memo : memos){
-                memosList[i++]=memo.getCategory();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch(NullPointerException e){
-            e.printStackTrace();
-        }
-
-        */
-
-        try {
+  /*      try {
             memosList = getMemos();
         }
         catch(NullPointerException e){
             e.printStackTrace();
         }
-
+*/
 
         // Bind to our new adapter.
-        //setListAdapter(adapter);
-        //ArrayAdapter<String> adapter =new ArrayAdapter<String>(this, R.layout.reminder_row, R.id.text1, items);
         lv = (ListView)findViewById(R.id.listview);
         inputSearch = (EditText) findViewById(R.id.inputSearch);
 
 
         adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_name, memosList);
-        lv.setAdapter(adapter);
+    // Commented previously working adapter temp
+        //    lv.setAdapter(adapter);
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+/*        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), MemoUpdateActivity.class);
@@ -183,10 +164,10 @@ public class HomeActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+*/
 
 
-
-        inputSearch.addTextChangedListener(new TextWatcher() {
+    /*    inputSearch.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
@@ -206,8 +187,70 @@ public class HomeActivity extends AppCompatActivity
                 // TODO Auto-generated method stub
 
             }
-        });
+        }); */
 
+        // Handling Tab Layout
+        instance=this;
+
+        getAllWidgets();
+        bindWidgetsWithAnEvent();
+        setupTabLayout();
+
+    }
+
+    public static HomeActivity getInstance() {
+        return instance;
+    }
+
+    private void getAllWidgets() {
+        allTabs = (TabLayout) findViewById(R.id.tabs);
+    }
+
+    private void setupTabLayout() {
+        fragmentOne = new FragmentOne(dbHelper, getIntent().getStringExtra("userEmail"));
+        fragmentTwo = new FragmentTwo(dbHelper, getIntent().getStringExtra("userEmail"));
+
+        allTabs.addTab(allTabs.newTab().setText("INDIVIDUAL Memo"),true);
+        allTabs.addTab(allTabs.newTab().setText("GROUP Memo"));
+    }
+
+    private void bindWidgetsWithAnEvent()
+    {
+        allTabs.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                setCurrentTabFragment(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+    }
+
+    private void setCurrentTabFragment(int tabPosition)
+    {
+        switch (tabPosition)
+        {
+            case 0 :
+                replaceFragment(fragmentOne);
+                break;
+            case 1 :
+                replaceFragment(fragmentTwo);
+                break;
+        }
+    }
+
+    public void replaceFragment(Fragment fragment) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.frame_container, fragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.commit();
     }
 
 
@@ -325,20 +368,17 @@ public class HomeActivity extends AppCompatActivity
     }
 
     // Function to retrieve Memos from DB
-    private ArrayList<String> getMemos(){
+    private ArrayList<String> getMemos(String type){
         // Querying Memos
         ArrayList<String> tempMemosList = new ArrayList<String>();
         try {
-            dbHelper = DBHelper.getInstance(this.getApplicationContext());
-            List<Memo> memos = dbHelper.getMemos(dbHelper.getUserID(getIntent().getStringExtra("userEmail")));
+            List<Memo> memos = dbHelper.getMemos(dbHelper.getUserID(getIntent().getStringExtra("userEmail")), type);
 
             int i=0;
             for(Memo memo : memos){
                 tempMemosList.add(memo.getMemoId()+" "+memo.getCategory());
             }
             return tempMemosList;
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch(NullPointerException e) {
             e.printStackTrace();
         }
@@ -348,10 +388,11 @@ public class HomeActivity extends AppCompatActivity
     // Function to update List View
     private void updateListViewData() {
         try {
-            ArrayList<String> newMemoList = getMemos();
-            adapter.clear();
+            ArrayList<String> newMemoList = getMemos("PERSONAL");
+           /* adapter.clear();
             adapter.addAll(newMemoList);
             adapter.notifyDataSetChanged();
+            */
         }
         catch(Exception e){
             e.printStackTrace();
