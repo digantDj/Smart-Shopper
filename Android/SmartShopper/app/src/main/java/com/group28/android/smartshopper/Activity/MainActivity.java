@@ -21,7 +21,6 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.group28.android.smartshopper.Database.DBHelper;
-import com.group28.android.smartshopper.Model.Memo;
 import com.group28.android.smartshopper.Model.User;
 import com.group28.android.smartshopper.R;
 
@@ -30,15 +29,12 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
@@ -227,11 +223,11 @@ public class MainActivity extends AppCompatActivity  implements
             final HttpPost httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/register");
 
             try {
-                List nameValuePairs = new ArrayList(1);
+                /*List nameValuePairs = new ArrayList(1);
                 nameValuePairs.add(new BasicNameValuePair("username", userName));
                 nameValuePairs.add(new BasicNameValuePair("token", userName));
                 nameValuePairs.add(new BasicNameValuePair("email", email));
-
+*/
                 JSONObject jsonObj = new JSONObject();
                 jsonObj.put("username", userName);
                 jsonObj.put("token", userName);

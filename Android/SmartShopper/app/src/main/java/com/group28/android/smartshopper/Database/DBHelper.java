@@ -49,8 +49,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private String userCOL6 = "creationDate";
 
     private String participantCOL1 = "memodId";
-    private String participantCOL2 = "groupId";
-    private String participantCOL3 = "email";
+    private String participantCOL2 = "email";
 
     private static SQLiteDatabase db = null;
     private Context context;
@@ -98,8 +97,7 @@ public class DBHelper extends SQLiteOpenHelper {
         userTableName = tableName;
         db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ( "
                 + participantCOL1 + " INTEGER PRIMARY KEY, "
-                + participantCOL2 + " INTEGER PRIMARY KEY, "
-                + participantCOL3 + " text)" );
+                + participantCOL2 + " text)" );
     }
 
     @Override
@@ -175,7 +173,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(userCOL1, participant.getMemoId());
-        contentValues.put(userCOL3, participant.getEmail());
+        contentValues.put(userCOL2, participant.getEmail());
 
         long result = db.insert(tableName, null, contentValues);
         if (result == -1) {

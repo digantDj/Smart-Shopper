@@ -97,6 +97,7 @@ public class HomeActivity extends AppCompatActivity
                   //      .setAction("Action", null).show();
 
                 Intent createMemoIntent = new Intent(HomeActivity.this, MemoActivity.class);
+                //Intent createMemoIntent = new Intent(HomeActivity.this, GroupMemoActivity.class);
                 createMemoIntent.putExtra("userEmail",getIntent().getStringExtra("userEmail"));
                 startActivity(createMemoIntent);
             }
