@@ -1,10 +1,9 @@
-package com.group28.android.smartshopper;
+package com.group28.android.smartshopper.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,25 +20,21 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.group28.android.smartshopper.Database.DBHelper;
+import com.group28.android.smartshopper.Model.User;
+import com.group28.android.smartshopper.R;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.R.attr.tag;
-
 
 public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
@@ -93,6 +88,12 @@ public class MainActivity extends AppCompatActivity  implements
 
     public final static String EXTRA_MESSAGE = "com.group28.android.smartshopper.HOMEMESSAGE";
 
+    private static DBHelper dbHelper;
+    private User dbUser;
+    private static final String USERTABLE = "user";
+    private static final String MEMOTABLE = "memo";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,6 +135,17 @@ public class MainActivity extends AppCompatActivity  implements
         Log.i(TAG,mGoogleApiClient.isConnected() + "");
        // App.getInstance().setClient(mGoogleApiClient);
 
+        try {
+            // Get Instance of DB
+
+            dbHelper = dbHelper.getInstance(this.getApplicationContext());
+            dbHelper.onCreateUserTable(USERTABLE);
+            dbHelper.onCreateMemoTable(MEMOTABLE);
+            dbUser = new User();
+        }
+        catch(IOException e){
+            Log.e("error","DBHelper getInstance error");
+        }
     }
 
     @Override
@@ -211,11 +223,11 @@ public class MainActivity extends AppCompatActivity  implements
             final HttpPost httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/register");
 
             try {
-                List nameValuePairs = new ArrayList(1);
+                /*List nameValuePairs = new ArrayList(1);
                 nameValuePairs.add(new BasicNameValuePair("username", userName));
                 nameValuePairs.add(new BasicNameValuePair("token", userName));
                 nameValuePairs.add(new BasicNameValuePair("email", email));
-
+*/
                 JSONObject jsonObj = new JSONObject();
                 jsonObj.put("username", userName);
                 jsonObj.put("token", userName);
@@ -225,10 +237,21 @@ public class MainActivity extends AppCompatActivity  implements
                 httpPost.setEntity(entity);
                 //httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 new Register().execute(httpClient,httpPost);
-                // Commenting Default SignIn UI code
-                // mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-                // updateUI(true);
 
+                // Store User details in Local DB
+                dbUser.setUserName(userName);
+                dbUser.setEmail(email);
+                dbUser.setToken(userName);
+                dbHelper.insertUser(dbUser,USERTABLE);
+            /*
+                // Creating DUMMY data
+                Memo dummyMemo = new Memo();
+                dummyMemo.setCategory("Grocery");
+                dummyMemo.setContent("Milk, Eggs");
+                dummyMemo.setUserId(dbHelper.getUserID(email));
+                dummyMemo.setStatus("Active");
+                dbHelper.insertMemo(dummyMemo, MEMOTABLE);
+                */
             }  catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
             } catch (JSONException e) {
