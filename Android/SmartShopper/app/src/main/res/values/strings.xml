@@ -153,4 +153,24 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_group_memo">GroupMemoActivity</string>
+
+    <string-array name="all_contacts">
+        <item>Mehul Rughani</item>
+        <item>Tejas Jasani</item>
+        <item>Ravi Gadesha</item>
+        <item>Ravi Soneji</item>
+        <item>Bharat Mamtora</item>
+        <item>Vivek Tank</item>
+        <item>Parth Trivedi</item>
+        <item>Hardik Trivedi</item>
+        <item>Mehul Rughani</item>
+        <item>Tejas Jasani</item>
+        <item>Ravi Soneji</item>
+        <item>Mehul Rughani</item>
+        <item>Bharat Mamtora</item>
+        <item>Vivek Tank</item>
+        <item>Parth Trivedi</item>
+        <item>Hardik Trivedi</item>
+        <item>Mehul Rughani</item>
+    </string-array>
 </resources>
