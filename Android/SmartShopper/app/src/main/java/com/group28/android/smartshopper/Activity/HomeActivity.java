@@ -1,72 +1,66 @@
-package com.group28.android.smartshopper;
+package com.group28.android.smartshopper.Activity;
 
-import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Debug;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.group28.android.smartshopper.Database.DBHelper;
+import com.group28.android.smartshopper.Fragments.FragmentOne;
+import com.group28.android.smartshopper.Fragments.FragmentTwo;
+import com.group28.android.smartshopper.Model.Memo;
+import com.group28.android.smartshopper.R;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import android.app.ListActivity;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.widget.ListAdapter;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
-
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.OptionalPendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-
-import org.w3c.dom.Text;
-
-import static android.R.attr.data;
-import static android.R.attr.tag;
+import static com.group28.android.smartshopper.R.id.textView;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         View.OnClickListener{
+
+    // Creating Instance for Tab Fragments
+    public static HomeActivity instance;
+
+    private FragmentOne fragmentOne;
+    private FragmentTwo fragmentTwo;
+    private TabLayout allTabs;
 
     ArrayAdapter<String> adapter;
     // List view
@@ -80,14 +74,19 @@ public class HomeActivity extends AppCompatActivity
     ImageView navImage;
 
     GoogleApiClient mGoogleApiClient;
-
-    // ArrayList for Listview
-    ArrayList<HashMap<String, String>> productList;
+    DBHelper dbHelper;
+    ArrayList<String> memosList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home2);
+
+        try {
+            dbHelper = DBHelper.getInstance(this.getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -112,10 +111,13 @@ public class HomeActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent createMemoIntent = new Intent(HomeActivity.this, MemoActivity.class);
+                //Intent createMemoIntent = new Intent(HomeActivity.this, GroupMemoActivity.class);
+                createMemoIntent.putExtra("userEmail",getIntent().getStringExtra("userEmail"));
+                startActivity(createMemoIntent);
             }
         });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -126,42 +128,43 @@ public class HomeActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-
-// --------------------------
         // Setting UserName in Navigation Menu
         View headerLayout = navigationView.getHeaderView(0); // 0-index header
         navUserName = (TextView) headerLayout.findViewById(R.id.userName);
         navUserName.setText("Hello " + getIntent().getStringExtra("userName"));
 
-        navEmail = (TextView) headerLayout.findViewById(R.id.textView);
+        navEmail = (TextView) headerLayout.findViewById(textView);
         navEmail.setText(getIntent().getStringExtra("userEmail"));
 
-/*
-        String userPhotoUrl = getIntent().getStringExtra("userPhoto");
-        Uri photoUri = Uri.parse(userPhotoUrl);
-        navImage = (ImageView) headerLayout.findViewById(R.id.imageView);
-        navImage.setImageURI(photoUri);
+  /*      try {
+            memosList = getMemos();
+        }
+        catch(NullPointerException e){
+            e.printStackTrace();
+        }
 */
 
-
-        // Listview Data
-        String products[] = {"Dell Inspiron", "HTC One X", "HTC Wildfire S", "HTC Sense", "HTC Sensation XE",
-                "iPhone 4S", "Samsung Galaxy Note 800",
-                "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro", "Samsung Galaxy S3", "MacBook Air", "Mac Mini", "MacBook Pro"
-        };
-
         // Bind to our new adapter.
-        //setListAdapter(adapter);
-        //ArrayAdapter<String> adapter =new ArrayAdapter<String>(this, R.layout.reminder_row, R.id.text1, items);
         lv = (ListView)findViewById(R.id.listview);
         inputSearch = (EditText) findViewById(R.id.inputSearch);
 
 
-        adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_name, products);
-        lv.setAdapter(adapter);
+        adapter = new ArrayAdapter<String>(this, R.layout.list_item, R.id.product_name, memosList);
+    // Commented previously working adapter temp
+        //    lv.setAdapter(adapter);
 
-        inputSearch.addTextChangedListener(new TextWatcher() {
+/*        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(view.getContext(), MemoUpdateActivity.class);
+                intent.putExtra("memoId", lv.getItemAtPosition(position).toString());
+                startActivity(intent);
+            }
+        });
+*/
+
+
+    /*    inputSearch.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
@@ -179,10 +182,75 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void afterTextChanged(Editable arg0) {
                 // TODO Auto-generated method stub
+
             }
-        });
+        }); */
+
+        // Handling Tab Layout
+        instance=this;
+
+        getAllWidgets();
+        bindWidgetsWithAnEvent();
+        setupTabLayout();
 
     }
+
+    public static HomeActivity getInstance() {
+        return instance;
+    }
+
+    private void getAllWidgets() {
+        allTabs = (TabLayout) findViewById(R.id.tabs);
+    }
+
+    private void setupTabLayout() {
+        fragmentOne = new FragmentOne(dbHelper, getIntent().getStringExtra("userEmail"));
+        fragmentTwo = new FragmentTwo(dbHelper, getIntent().getStringExtra("userEmail"));
+
+        allTabs.addTab(allTabs.newTab().setText("INDIVIDUAL Memo"),true);
+        allTabs.addTab(allTabs.newTab().setText("GROUP Memo"));
+    }
+
+    private void bindWidgetsWithAnEvent()
+    {
+        allTabs.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                setCurrentTabFragment(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+    }
+
+    private void setCurrentTabFragment(int tabPosition)
+    {
+        switch (tabPosition)
+        {
+            case 0 :
+                replaceFragment(fragmentOne);
+                break;
+            case 1 :
+                replaceFragment(fragmentTwo);
+                break;
+        }
+    }
+
+    public void replaceFragment(Fragment fragment) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.frame_container, fragment);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.commit();
+    }
+
+
 
 
 
@@ -296,10 +364,44 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    // Function to retrieve Memos from DB
+    private ArrayList<String> getMemos(String type){
+        // Querying Memos
+        ArrayList<String> tempMemosList = new ArrayList<String>();
+        try {
+            List<Memo> memos = dbHelper.getMemos(dbHelper.getUserID(getIntent().getStringExtra("userEmail")), type);
+
+            int i=0;
+            for(Memo memo : memos){
+                tempMemosList.add(memo.getMemoId()+" "+memo.getCategory());
+            }
+            return tempMemosList;
+        } catch(NullPointerException e) {
+            e.printStackTrace();
+        }
+        return tempMemosList;
+    }
+
+    // Function to update List View
+    private void updateListViewData() {
+        try {
+            ArrayList<String> newMemoList = getMemos("PERSONAL");
+           /* adapter.clear();
+            adapter.addAll(newMemoList);
+            adapter.notifyDataSetChanged();
+            */
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
+        //Updating Memo
+        updateListViewData();
     }
 
     @Override

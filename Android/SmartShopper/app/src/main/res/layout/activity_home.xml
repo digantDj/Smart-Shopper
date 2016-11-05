@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.group28.android.smartshopper.HomeActivity">
+    tools:context="com.group28.android.smartshopper.Activity.HomeActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -33,6 +33,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_home" />
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
