@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.group28.android.smartshopper.Model.Memo;
 import com.group28.android.smartshopper.Model.Participant;
+import com.group28.android.smartshopper.Model.Preference;
 import com.group28.android.smartshopper.Model.User;
 
 import java.io.File;
@@ -19,8 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static android.R.attr.type;
 
 /**
  * Created by Mihir on 9/30/2016.
@@ -31,6 +30,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static String memoTableName;
     private static String userTableName;
     private static String participantTableName;
+    private static String preferenceTableName;
 
     private String memoCOL1 = "memoId";
     private String memoCOL2 = "userId";
@@ -53,6 +53,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private String participantCOL1 = "memodId";
     private String participantCOL2 = "email";
+
+    private String prefCOL1 = "userId";
+    private String prefCOL2 = "category";
+    private String prefCOL3 = "preference";
 
     private static SQLiteDatabase db = null;
     private Context context;
@@ -101,6 +105,14 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ( "
                 + participantCOL1 + " INTEGER, "
                 + participantCOL2 + " text)" );
+    }
+
+    public void onCreatePreferences(String tableName) throws SQLiteException {
+        preferenceTableName = tableName;
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " ( "
+                + prefCOL1 + " INTEGER, "
+                + prefCOL2 + " text,"
+                + prefCOL3 + " text)" );
     }
 
     @Override
@@ -182,6 +194,21 @@ public class DBHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(participantCOL1, participant.getMemoId());
         contentValues.put(participantCOL2, participant.getEmail());
+
+        long result = db.insert(tableName, null, contentValues);
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public boolean insertPreferences(Preference preference, String tableName) {
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(prefCOL1, preference.getUserId());
+        contentValues.put(prefCOL2, preference.getCategory());
+        contentValues.put(prefCOL3, preference.getShoppingPreference());
 
         long result = db.insert(tableName, null, contentValues);
         if (result == -1) {
