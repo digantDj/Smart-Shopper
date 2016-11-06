@@ -39,7 +39,7 @@
             android:id="@+id/textView2"
             android:layout_weight="0.32"
             tools:text="Enter email id(s) of members"
-            android:text="textView2" />
+            android:text="Enter email id(s) of members" />
 
         <EditText
             android:layout_width="match_parent"

@@ -99,6 +99,8 @@ public class FragmentOne extends Fragment implements SearchView.OnQueryTextListe
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(view.getContext(), MemoUpdateActivity.class);
                 intent.putExtra("memo", memosList.get(position));
+                //intent.putExtra("memoId", memosList.get(position).getMemoId());
+                intent.putExtra("userEmail", HomeActivity.getInstance().getIntent().getStringExtra("userEmail"));
                 // listView.getItemAtPosition(position)
                 startActivity(intent);
             }

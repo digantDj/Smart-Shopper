@@ -1,7 +1,9 @@
 package com.group28.android.smartshopper.Activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -93,12 +95,17 @@ public class MainActivity extends AppCompatActivity  implements
     private static final String USERTABLE = "user";
     private static final String MEMOTABLE = "memo";
 
+    public static final String MyPREFERENCES = "SmartShopper" ;
+    SharedPreferences sharedpreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
         // Views
         mStatusTextView = (TextView) findViewById(R.id.status);
@@ -266,8 +273,13 @@ public class MainActivity extends AppCompatActivity  implements
     public void loadHomePage(GoogleSignInResult googleSignInResult){
         Intent homeIntent = new Intent(this, HomeActivity.class);
      //   homeIntent.putExtra(EXTRA_MESSAGE, googleSignInResult.getSignInAccount().getDisplayName()); // Adding message to invoke HomeActivity
-        homeIntent.putExtra("userName",googleSignInResult.getSignInAccount().getDisplayName());
-        homeIntent.putExtra("userEmail",googleSignInResult.getSignInAccount().getEmail());
+      //  homeIntent.putExtra("userName",googleSignInResult.getSignInAccount().getDisplayName());
+      //  homeIntent.putExtra("userEmail",googleSignInResult.getSignInAccount().getEmail());
+
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString("userName", googleSignInResult.getSignInAccount().getDisplayName());
+        editor.putString("email", googleSignInResult.getSignInAccount().getEmail());
+        editor.commit();
 
        //Log.i("adsadasd",googleSignInResult.getSignInAccount().getPhotoUrl().toString());
         //homeIntent.putExtra("userPhoto",googleSignInResult.getSignInAccount().getPhotoUrl().toString());

@@ -2,6 +2,7 @@ package com.group28.android.smartshopper.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.StringBuilderPrinter;
 
 /**
  * Created by Mihir on 10/26/2016.
@@ -10,7 +11,7 @@ import android.os.Parcelable;
 public class Memo implements Parcelable {
     private int memoId;
     private int userId;
-    //private int groupId;
+    private int groupMemoId;
     private String category;
     private String content;
     private String status;
@@ -24,14 +25,14 @@ public class Memo implements Parcelable {
         this.userId = userId;
     }
 
-    /*public int getGroupId() {
-        return groupId;
+    public int getGroupMemoId() {
+        return groupMemoId;
     }
 
-    public void setGroupId(int groupId) {
-        this.groupId = groupId;
+    public void setGroupMemoId(int groupId) {
+        this.groupMemoId = groupId;
     }
-*/
+
     public void setMemoId(int memoId) {
         this.memoId = memoId;
     }
@@ -83,7 +84,8 @@ public class Memo implements Parcelable {
                 this.category,
                 this.status,
                 this.content,
-                this.type});
+                this.type,
+                String.valueOf(this.groupMemoId)});
     }
 
     public Memo(){
@@ -93,7 +95,7 @@ public class Memo implements Parcelable {
 
     // Parcelling part
     public Memo(Parcel in){
-        String[] data = new String[5];
+        String[] data = new String[6];
 
         in.readStringArray(data);
         this.memoId = Integer.parseInt(data[0]);
@@ -101,6 +103,7 @@ public class Memo implements Parcelable {
         this.status = data[2];
         this.content = data[3];
         this.type = data[4];
+        this.groupMemoId = Integer.parseInt(data[5]);
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
