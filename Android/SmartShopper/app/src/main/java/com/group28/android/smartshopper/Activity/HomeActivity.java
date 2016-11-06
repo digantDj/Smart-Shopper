@@ -373,7 +373,13 @@ public class HomeActivity extends AppCompatActivity
 
         //this way you have can use object of mGoogleApiClient anywhere in the app.
 */
-        Log.i("asfdad",mGoogleApiClient.isConnected() + "");
+        Log.i("Logout",mGoogleApiClient.isConnected() + "");
+
+        // Clearing sharedpreferences after logout
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.clear();
+        editor.commit();
+
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
