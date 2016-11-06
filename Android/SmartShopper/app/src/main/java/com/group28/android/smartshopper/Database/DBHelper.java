@@ -305,6 +305,33 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<Preference> getPreferences(int userId) {
+        ArrayList<Preference> preferences = new ArrayList<Preference>();
+        Cursor cursor = null;
+        db = dbHelper.getReadableDatabase();
+        Preference preference;
+        String selectQuery = "SELECT * FROM " + preferenceTableName + " WHERE `" + prefCOL1 + "` = " + userId;
+        Log.d("getPreferenceQuery", selectQuery);
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+            while (cursor.moveToNext()) {
+                preference = new Preference();
+                preference.setUserId(userId);
+                preference.setCategory(cursor.getString(cursor.getColumnIndex(prefCOL2)));
+                preference.setShoppingPreference(cursor.getString(cursor.getColumnIndex(prefCOL3)));
+                preferences.add(preference);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            preferences = null;
+        } finally {
+            cursor.close();
+            return preferences;
+        }
+
+    }
+
+
     public boolean deleteParticipants(int memoId){
         long result = db.delete(participantTableName,participantCOL1+"="+memoId,null);
         if (result == -1) {
