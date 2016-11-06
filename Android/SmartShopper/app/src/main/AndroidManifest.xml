@@ -42,6 +42,9 @@
             android:name=".Activity.GroupMemoActivity"
             android:label="@string/title_activity_group_memo"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".Activity.GroupMemoUpdateActivity"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

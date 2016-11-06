@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import com.group28.android.smartshopper.Activity.GroupMemoActivity;
+import com.group28.android.smartshopper.Activity.GroupMemoUpdateActivity;
 import com.group28.android.smartshopper.Activity.HomeActivity;
 import com.group28.android.smartshopper.Activity.MemoUpdateActivity;
 import com.group28.android.smartshopper.Adapter.ListViewAdapter;
@@ -93,8 +95,10 @@ public class FragmentTwo extends Fragment implements SearchView.OnQueryTextListe
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(view.getContext(), MemoUpdateActivity.class);
-                intent.putExtra("memoId", listView.getItemAtPosition(position).toString());
+                Intent intent = new Intent(view.getContext(), GroupMemoUpdateActivity.class);
+                //intent.putExtra("memoId", memosList.get(position).getGroupMemoId());
+                intent.putExtra("memo", memosList.get(position));
+                //intent.putExtra("userEmail", HomeActivity.getInstance().getIntent().getStringExtra("userEmail"));
                 startActivity(intent);
             }
         });

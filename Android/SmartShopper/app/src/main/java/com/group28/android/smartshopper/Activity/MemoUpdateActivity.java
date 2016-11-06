@@ -17,8 +17,6 @@ import com.group28.android.smartshopper.R;
 
 import java.io.IOException;
 
-import static android.R.attr.data;
-
 public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
     DBHelper dbHelper;
@@ -37,20 +35,20 @@ public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSe
         editText = (EditText)findViewById(R.id.editText);
         //memo = new Memo();
         intent = getIntent();
-        Bundle intentData = getIntent().getExtras();
-        Memo intentMemo = (Memo) intentData.getParcelable("memo");
-        //String[] itemDetails = intent.getStringExtra("memoId").toString().split(" ");
-        // int memoId = Integer.parseInt(itemDetails[0]);
-        int memoId = intentMemo.getMemoId();
+        // String[] itemDetails = intent.getStringExtra("memoId").toString();
+        Bundle data = getIntent().getExtras();
+        Memo memoIntent = data.getParcelable("memo");
+        int memoId = memoIntent.getMemoId();
 
         try {
             dbHelper = DBHelper.getInstance(this);
-            dbHelper.onCreateMemoTable("memo");
+            //dbHelper.onCreateMemoTable("memo");
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        memo = dbHelper.getMemoWithMemoId(memoId);
+       //  memo = dbHelper.getMemoWithMemoId(memoId,"PERSONAL");
+        memo = memoIntent;
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.menu_items, R.layout.activity_memospinnerview);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 
@@ -58,7 +56,6 @@ public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSe
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
         spinner.setSelection(adapter.getPosition(memo.getCategory()));
-
         editText.setText(memo.getContent());
 
 
@@ -74,10 +71,10 @@ public class MemoUpdateActivity extends Activity implements AdapterView.OnItemSe
                 //memo.setType("PERSONAL");
                 //memo.setStatus("ACTIVE");
 
-                if (dbHelper.updateMemo(memo, "memo")) {
+                if (dbHelper.updateMemo(memo, "memo","PERSONAL")) {
                         //Toast.makeText(MemoActivity.this, "Insert Successful", Toast.LENGTH_SHORT).show();
                         // Redirect User to Home Screen upon successful insertion
-                        Intent i = new Intent(MemoUpdateActivity.this, MainActivity.class);
+                        Intent i = new Intent(MemoUpdateActivity.this, HomeActivity.class);
                         startActivity(i);
                         finish();
                     }

@@ -1,6 +1,8 @@
 package com.group28.android.smartshopper.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -77,10 +79,20 @@ public class HomeActivity extends AppCompatActivity
     DBHelper dbHelper;
     ArrayList<String> memosList;
 
+    // Custom variable to store currentTab
+    private String currentTab;
+
+    // For recieving logged-in user's email and userName
+    public static final String MyPREFERENCES = "SmartShopper" ;
+    SharedPreferences sharedpreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home2);
+
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
         try {
             dbHelper = DBHelper.getInstance(this.getApplicationContext());
@@ -111,10 +123,20 @@ public class HomeActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent createMemoIntent = new Intent(HomeActivity.this, MemoActivity.class);
-                //Intent createMemoIntent = new Intent(HomeActivity.this, GroupMemoActivity.class);
-                createMemoIntent.putExtra("userEmail",getIntent().getStringExtra("userEmail"));
-                startActivity(createMemoIntent);
+                if(currentTab != null) {
+                    if(currentTab == "INDIVIDUAL MEMO") {
+                        Intent createMemoIntent = new Intent(HomeActivity.this, MemoActivity.class);
+                        //Intent createMemoIntent = new Intent(HomeActivity.this, GroupMemoActivity.class);
+                      //  createMemoIntent.putExtra("userEmail", getIntent().getStringExtra("userEmail"));
+                        startActivity(createMemoIntent);
+                    }
+                    else{
+                        Intent createMemoIntent = new Intent(HomeActivity.this, GroupMemoActivity.class);
+                        //Intent createMemoIntent = new Intent(HomeActivity.this, GroupMemoActivity.class);
+                      //  createMemoIntent.putExtra("userEmail", getIntent().getStringExtra("userEmail"));
+                        startActivity(createMemoIntent);
+                    }
+                }
             }
         });
 
@@ -131,10 +153,12 @@ public class HomeActivity extends AppCompatActivity
         // Setting UserName in Navigation Menu
         View headerLayout = navigationView.getHeaderView(0); // 0-index header
         navUserName = (TextView) headerLayout.findViewById(R.id.userName);
-        navUserName.setText("Hello " + getIntent().getStringExtra("userName"));
 
+        // navUserName.setText("Hello " + getIntent().getStringExtra("userName"));
+        navUserName.setText("Hello "+ sharedpreferences.getString("userName","user"));
         navEmail = (TextView) headerLayout.findViewById(textView);
-        navEmail.setText(getIntent().getStringExtra("userEmail"));
+        //navEmail.setText(getIntent().getStringExtra("userEmail"));
+        navEmail.setText(sharedpreferences.getString("email",""));
 
   /*      try {
             memosList = getMemos();
@@ -204,11 +228,11 @@ public class HomeActivity extends AppCompatActivity
     }
 
     private void setupTabLayout() {
-        fragmentOne = new FragmentOne(dbHelper, getIntent().getStringExtra("userEmail"));
-        fragmentTwo = new FragmentTwo(dbHelper, getIntent().getStringExtra("userEmail"));
+        fragmentOne = new FragmentOne(dbHelper, sharedpreferences.getString("email",""));
+        fragmentTwo = new FragmentTwo(dbHelper, sharedpreferences.getString("email",""));
 
-        allTabs.addTab(allTabs.newTab().setText("INDIVIDUAL Memo"),true);
-        allTabs.addTab(allTabs.newTab().setText("GROUP Memo"));
+        allTabs.addTab(allTabs.newTab().setText("INDIVIDUAL MEMO"),true);
+        allTabs.addTab(allTabs.newTab().setText("GROUP MEMO"));
     }
 
     private void bindWidgetsWithAnEvent()
@@ -217,6 +241,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 setCurrentTabFragment(tab.getPosition());
+                currentTab = tab.getText().toString();
             }
 
             @Override
@@ -369,7 +394,7 @@ public class HomeActivity extends AppCompatActivity
         // Querying Memos
         ArrayList<String> tempMemosList = new ArrayList<String>();
         try {
-            List<Memo> memos = dbHelper.getMemos(dbHelper.getUserID(getIntent().getStringExtra("userEmail")), type);
+            List<Memo> memos = dbHelper.getMemos(dbHelper.getUserID(sharedpreferences.getString("email","")), type);
 
             int i=0;
             for(Memo memo : memos){
