@@ -390,29 +390,7 @@ public class MainActivity extends AppCompatActivity  implements
                     token = intent.getStringExtra("token");
                     //Displaying the token as toast
                     Toast.makeText(getApplicationContext(), "Registration token:" + token, Toast.LENGTH_LONG).show();
-                    //Update token in local db.
-                    dbHelper.updateToken(email,token);
-                    //Update token in server
-                    final HttpClient httpClient = new DefaultHttpClient();
-                    final HttpPost httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/update_token");
-
-                    try {
-
-                        JSONObject jsonObj = new JSONObject();
-                        jsonObj.put("email", email);
-                        jsonObj.put("token", token);
-                        StringEntity entity = new StringEntity(jsonObj.toString(), HTTP.UTF_8);
-                        entity.setContentType("application/json");
-                        httpPost.setEntity(entity);
-                        new Register().execute(httpClient,httpPost);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-
-
+                    
                     //if the intent is not with success then displaying error messages
                 } else if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_ERROR)){
                     Toast.makeText(getApplicationContext(), "GCM registration error!", Toast.LENGTH_LONG).show();
