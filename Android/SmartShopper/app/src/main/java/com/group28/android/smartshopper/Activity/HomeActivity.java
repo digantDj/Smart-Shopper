@@ -337,10 +337,13 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_manage) {
-            // Handle the camera action
+            // Handle the Snooze action
 
         } else if (id == R.id.nav_share) {
+            // Share preference
 
+            Intent recommendationIntent = new Intent(HomeActivity.this, RecommendActivity.class);
+            startActivity(recommendationIntent);
         } else if (id == R.id.nav_logout) {
             // Signout from the application
             signOut();
