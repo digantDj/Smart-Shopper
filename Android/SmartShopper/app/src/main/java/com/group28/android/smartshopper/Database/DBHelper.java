@@ -331,7 +331,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
-
     public boolean deleteParticipants(int memoId){
         long result = db.delete(participantTableName,participantCOL1+"="+memoId,null);
         if (result == -1) {
@@ -359,6 +358,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
         }
         return result;
+    }
+
+    public void updateToken(String email,String token){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(userCOL4,token);
+        long result = db.update(userTableName,contentValues,"email=\""+email+"\"",null);
     }
 
     public int getMaxMemoId(){
