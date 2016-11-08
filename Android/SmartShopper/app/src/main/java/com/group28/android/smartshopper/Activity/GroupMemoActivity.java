@@ -178,6 +178,20 @@ public class GroupMemoActivity extends Activity implements AdapterView.OnItemSel
                     entity.setContentType("application/json");
                     httpPost.setEntity(entity);
                     new GroupMemoActivity.CreateMemo().execute(httpClient, httpPost);
+
+                    // send notification to participants
+                    httpClient = new DefaultHttpClient();
+                    httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/send_push");
+                    for(String email:participants){
+                        jsonObj = new JSONObject();
+                        jsonObj.put("email", email);
+                        jsonObj.put("title", "Group Memo Added");
+                        jsonObj.put("message", sharedpreferences.getString("email","") + " added you to Memo - "+ category + ":" + content);
+                        entity = new StringEntity(jsonObj.toString(), HTTP.UTF_8);
+                        entity.setContentType("application/json");
+                        httpPost.setEntity(entity);
+                        new GroupMemoActivity.CreateMemo().execute(httpClient, httpPost);
+                    }
                 }catch (IOException ioe){
 
                 }catch(JSONException je){

@@ -1,22 +1,27 @@
 package com.group28.android.smartshopper.Activity;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
@@ -25,6 +30,7 @@ import com.google.android.gms.common.api.Status;
 import com.group28.android.smartshopper.Database.DBHelper;
 import com.group28.android.smartshopper.Model.User;
 import com.group28.android.smartshopper.R;
+import com.group28.android.smartshopper.Service.GCMRegistrationIntentService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -37,6 +43,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
@@ -99,11 +106,16 @@ public class MainActivity extends AppCompatActivity  implements
     SharedPreferences sharedpreferences;
 
 
+    //Creating a broadcast receiver for gcm registration
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+    private String token;
+    private String email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
@@ -220,45 +232,34 @@ public class MainActivity extends AppCompatActivity  implements
              * and an ID token for the user with with getIdToken
             * */
             String userName = acct.getDisplayName();
-            String email = acct.getEmail();
+            email = acct.getEmail();
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.server_client_id))
                     .build();
             Log.d(TAG,acct.toString());
 
+            setUpGCMServices();
+
             final HttpClient httpClient = new DefaultHttpClient();
             final HttpPost httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/register");
 
             try {
-                /*List nameValuePairs = new ArrayList(1);
-                nameValuePairs.add(new BasicNameValuePair("username", userName));
-                nameValuePairs.add(new BasicNameValuePair("token", userName));
-                nameValuePairs.add(new BasicNameValuePair("email", email));
-*/
+
                 JSONObject jsonObj = new JSONObject();
                 jsonObj.put("username", userName);
-                jsonObj.put("token", userName);
+                //jsonObj.put("token", token);
                 jsonObj.put("email", email);
                 StringEntity entity = new StringEntity(jsonObj.toString(), HTTP.UTF_8);
                 entity.setContentType("application/json");
                 httpPost.setEntity(entity);
-                //httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                 new Register().execute(httpClient,httpPost);
 
                 // Store User details in Local DB
                 dbUser.setUserName(userName);
                 dbUser.setEmail(email);
-                dbUser.setToken(userName);
+                //dbUser.setToken(token);
                 dbHelper.insertUser(dbUser,USERTABLE);
-            /*
-                // Creating DUMMY data
-                Memo dummyMemo = new Memo();
-                dummyMemo.setCategory("Grocery");
-                dummyMemo.setContent("Milk, Eggs");
-                dummyMemo.setUserId(dbHelper.getUserID(email));
-                dummyMemo.setStatus("Active");
-                dbHelper.insertMemo(dummyMemo, MEMOTABLE);
-                */
+
             }  catch (IOException e) {
                 Log.e(TAG, "Error sending ID token to backend.", e);
             } catch (JSONException e) {
@@ -279,6 +280,7 @@ public class MainActivity extends AppCompatActivity  implements
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("userName", googleSignInResult.getSignInAccount().getDisplayName());
         editor.putString("email", googleSignInResult.getSignInAccount().getEmail());
+        editor.putString("token", token);
         editor.commit();
 
        //Log.i("adsadasd",googleSignInResult.getSignInAccount().getPhotoUrl().toString());
@@ -370,5 +372,99 @@ public class MainActivity extends AppCompatActivity  implements
                 revokeAccess();
                 break;
         }
+    }
+
+    public void setUpGCMServices(){
+    //Initializing our broadcast receiver
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+
+            //When the broadcast received
+            //We are sending the broadcast from GCMRegistrationIntentService
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //If the broadcast has received with success
+                //that means device is registered successfully
+                if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_SUCCESS)){
+                    //Getting the registration token from the intent
+                    token = intent.getStringExtra("token");
+                    //Displaying the token as toast
+                    Toast.makeText(getApplicationContext(), "Registration token:" + token, Toast.LENGTH_LONG).show();
+                    //Update token in local db.
+                    dbHelper.updateToken(email,token);
+                    //Update token in server
+                    final HttpClient httpClient = new DefaultHttpClient();
+                    final HttpPost httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/update_token");
+
+                    try {
+
+                        JSONObject jsonObj = new JSONObject();
+                        jsonObj.put("email", email);
+                        jsonObj.put("token", token);
+                        StringEntity entity = new StringEntity(jsonObj.toString(), HTTP.UTF_8);
+                        entity.setContentType("application/json");
+                        httpPost.setEntity(entity);
+                        new Register().execute(httpClient,httpPost);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    //if the intent is not with success then displaying error messages
+                } else if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_ERROR)){
+                    Toast.makeText(getApplicationContext(), "GCM registration error!", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Error occurred", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+
+        //Checking play service is available or not
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+
+        //if play service is not available
+        if(ConnectionResult.SUCCESS != resultCode) {
+            //If play service is supported but not installed
+            if(GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                //Displaying message that play service is not installed
+                Toast.makeText(getApplicationContext(), "Google Play Service is not install/enabled in this device!", Toast.LENGTH_LONG).show();
+                GooglePlayServicesUtil.showErrorNotification(resultCode, getApplicationContext());
+
+                //If play service is not supported
+                //Displaying an error message
+            } else {
+                Toast.makeText(getApplicationContext(), "This device does not support for Google Play Service!", Toast.LENGTH_LONG).show();
+            }
+
+            //If play service is available
+        } else {
+            //Starting intent to register device
+            Intent itent = new Intent(this, GCMRegistrationIntentService.class);
+            startService(itent);
+        }
+
+    }
+
+    //Registering receiver on activity resume
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.w("MainActivity", "onResume");
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(GCMRegistrationIntentService.REGISTRATION_SUCCESS));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(GCMRegistrationIntentService.REGISTRATION_ERROR));
+    }
+
+
+    //Unregistering receiver on activity paused
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.w("MainActivity", "onPause");
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     }
 }
