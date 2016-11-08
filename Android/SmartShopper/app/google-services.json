@@ -1,7 +1,9 @@
 {
   "project_info": {
     "project_number": "331443459801",
-    "project_id": "smart-shopper-f68b5"
+    "firebase_url": "https://smart-shopper-f68b5.firebaseio.com",
+    "project_id": "smart-shopper-f68b5",
+    "storage_bucket": "smart-shopper-f68b5.appspot.com"
   },
   "client": [
     {
@@ -21,6 +23,14 @@
           }
         },
         {
+          "client_id": "331443459801-ik9amhfdckpk504l358jaudo2i48rps2.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "331443459801-o5uv0g7r8f0vp20lkcf7iud8512ksj42.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
           "client_id": "331443459801-o3kct85eo4h5qramvrv8qlf7aspnuika.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -35,11 +45,16 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "331443459801-ik9amhfdckpk504l358jaudo2i48rps2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }

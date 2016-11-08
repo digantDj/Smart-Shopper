@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 import static android.R.attr.category;
+import static android.R.attr.type;
 
 /**
  * Created by Mihir on 9/30/2016.
@@ -331,6 +332,21 @@ public class DBHelper extends SQLiteOpenHelper {
             return preferences;
         }
 
+    }
+
+    public boolean updatePreference(Preference preference, String tableName) {
+
+        ContentValues contentValues = new ContentValues();
+        //contentValues.put(prefCOL2, preference.getCategory());
+        contentValues.put(prefCOL3, preference.getShoppingPreference());
+        String condition;
+        condition = prefCOL1 + " = " + preference.getUserId() + " and " + prefCOL2 + " = " + preference.getCategory();
+        long result = db.update(tableName,contentValues,condition,null);
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 
