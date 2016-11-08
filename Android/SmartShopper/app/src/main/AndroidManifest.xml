@@ -28,8 +28,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.MemoActivity"></activity>
-        <activity android:name=".Activity.MemoUpdateActivity"></activity>
+        <activity android:name=".Activity.MemoActivity" />
+        <activity android:name=".Activity.MemoUpdateActivity" />
         <activity
             android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login" />
@@ -41,10 +41,11 @@
         <activity
             android:name=".Activity.GroupMemoActivity"
             android:label="@string/title_activity_group_memo"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activity.GroupMemoUpdateActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Activity.RecommendActivity"></activity>
     </application>
 
 </manifest>
