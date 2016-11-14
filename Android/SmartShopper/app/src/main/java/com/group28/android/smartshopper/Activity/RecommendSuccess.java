@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.group28.android.smartshopper.Database.DBHelper;
 import com.group28.android.smartshopper.Model.Memo;
@@ -17,6 +18,7 @@ public class RecommendSuccess extends AppCompatActivity {
 
     Preference preferenceObj;
     DBHelper dbHelper;
+    TextView categoryTextView;
 
     SharedPreferences sharedPreferences;
     @Override
@@ -38,6 +40,8 @@ public class RecommendSuccess extends AppCompatActivity {
             else{
                 dbHelper.insertPreferences(preferenceObj, RecommendActivity.preferenceTableName);
             }
+            categoryTextView = (TextView) findViewById(R.id.textView4);
+            categoryTextView.setText(getIntent().getStringExtra("category") + "->" + getIntent().getStringExtra("place") );
         } catch (IOException e) {
             e.printStackTrace();
         }

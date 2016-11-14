@@ -54,6 +54,8 @@ public class GCMPushReceiverService extends GcmListenerService {
                 .setContentIntent(pendingIntent);
                 */
 
+        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.common_plus_signin_btn_icon_light, "Accept", pendingIntent).build();
+
         NotificationCompat.Builder noBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentText(data.getString("message"))
@@ -62,9 +64,10 @@ public class GCMPushReceiverService extends GcmListenerService {
                 .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(data.getString("message")))
                 //.addAction(R.drawable.ic_launcher, "Accept",pendingIntent);
-                .addAction(R.drawable.ic_launcher, "Cancel",pendingIntent);
+                .addAction(action);
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, noBuilder.build()); //0 = ID of notification
+      //  notificationManager.cancelAll();
     }
 }

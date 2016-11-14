@@ -426,7 +426,7 @@ public class MainActivity extends AppCompatActivity  implements
             //Starting intent to register device
             Intent itent = new Intent(this, GCMRegistrationIntentService.class);
             startService(itent);
-            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter("Registration successful"));
+            //LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter("Registration successful"));
         }
 
     }
