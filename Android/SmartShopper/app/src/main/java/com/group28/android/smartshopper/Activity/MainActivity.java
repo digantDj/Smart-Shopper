@@ -45,6 +45,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import static com.group28.android.smartshopper.Activity.RecommendActivity.preferenceTableName;
+
 public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
         View.OnClickListener {
@@ -101,6 +103,7 @@ public class MainActivity extends AppCompatActivity  implements
     private User dbUser;
     private static final String USERTABLE = "user";
     private static final String MEMOTABLE = "memo";
+    private static final String PREFERENCETABLE = "preferences";
 
     public static final String MyPREFERENCES = "SmartShopper" ;
     SharedPreferences sharedpreferences;
@@ -160,6 +163,7 @@ public class MainActivity extends AppCompatActivity  implements
             dbHelper = dbHelper.getInstance(this.getApplicationContext());
             dbHelper.onCreateUserTable(USERTABLE);
             dbHelper.onCreateMemoTable(MEMOTABLE);
+            dbHelper.onCreatePreferences(PREFERENCETABLE);
             dbUser = new User();
         }
         catch(IOException e){
@@ -390,7 +394,7 @@ public class MainActivity extends AppCompatActivity  implements
                     token = intent.getStringExtra("token");
                     //Displaying the token as toast
                     Toast.makeText(getApplicationContext(), "Registration token:" + token, Toast.LENGTH_LONG).show();
-                    
+
                     //if the intent is not with success then displaying error messages
                 } else if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_ERROR)){
                     Toast.makeText(getApplicationContext(), "GCM registration error!", Toast.LENGTH_LONG).show();
@@ -422,6 +426,7 @@ public class MainActivity extends AppCompatActivity  implements
             //Starting intent to register device
             Intent itent = new Intent(this, GCMRegistrationIntentService.class);
             startService(itent);
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter("Registration successful"));
         }
 
     }

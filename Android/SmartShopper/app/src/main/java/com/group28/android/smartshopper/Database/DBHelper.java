@@ -334,6 +334,32 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+    public ArrayList<Preference> getPreferencesFromCategory(int userId, String category) {
+        ArrayList<Preference> preferences = new ArrayList<Preference>();
+        Cursor cursor = null;
+        db = dbHelper.getReadableDatabase();
+        Preference preference;
+        String selectQuery = "SELECT * FROM " + preferenceTableName + " WHERE `" + prefCOL1 + "` = " + userId + " and " + prefCOL2 + " = '" + category + "'";
+        Log.d("getPreferenceQuery", selectQuery);
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+            while (cursor.moveToNext()) {
+                preference = new Preference();
+                preference.setUserId(userId);
+                preference.setCategory(cursor.getString(cursor.getColumnIndex(prefCOL2)));
+                preference.setShoppingPreference(cursor.getString(cursor.getColumnIndex(prefCOL3)));
+                preferences.add(preference);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            preferences = null;
+        } finally {
+            cursor.close();
+            return preferences;
+        }
+
+    }
+
 
     public boolean updatePreference(Preference preference, String tableName) {
 
@@ -341,7 +367,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //contentValues.put(prefCOL2, preference.getCategory());
         contentValues.put(prefCOL3, preference.getShoppingPreference());
         String condition;
-        condition = prefCOL1 + " = " + preference.getUserId() + " and " + prefCOL2 + " = " + preference.getCategory();
+        condition = prefCOL1 + " = " + preference.getUserId() + " and " + prefCOL2 + " = '" + preference.getCategory() + "'";
         long result = db.update(tableName,contentValues,condition,null);
         if (result == -1) {
             return false;

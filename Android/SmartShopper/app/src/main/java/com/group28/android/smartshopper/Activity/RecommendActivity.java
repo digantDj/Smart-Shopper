@@ -70,7 +70,7 @@ public class RecommendActivity extends Activity implements AdapterView.OnItemSel
         // DB Helper
         try {
             dbHelper = DBHelper.getInstance(this);
-            dbHelper.onCreatePreferences(preferenceTableName);
+            //dbHelper.onCreatePreferences(preferenceTableName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -146,7 +146,9 @@ public class RecommendActivity extends Activity implements AdapterView.OnItemSel
                 JSONObject jsonObj = new JSONObject();
                 jsonObj.put("email", email.getText());
                 jsonObj.put("title", "Recommendation from a friend");
-                jsonObj.put("message", sharedpreferences.getString("email", "") + " sent a recommendation - " + spinner.getSelectedItem().toString() + ":" + place.getText().toString());
+                jsonObj.put("message", sharedpreferences.getString("email", "") + " recommends you to try out " + place.getText().toString() + " for " + spinner.getSelectedItem().toString());
+                jsonObj.put("category", spinner.getSelectedItem().toString());
+                jsonObj.put("place", place.getText().toString());
                 StringEntity entity = new StringEntity(jsonObj.toString(), HTTP.UTF_8);
                 entity.setContentType("application/json");
                 httpPost.setEntity(entity);
