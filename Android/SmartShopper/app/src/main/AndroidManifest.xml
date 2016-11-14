@@ -55,15 +55,16 @@
         <activity android:name=".Activity.RecommendActivity"/>
 
         <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
+            android:name=".Service.GCMBroadcastReceiver"
+            android:exported="false"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
-                <category android:name="com.example.gcm" />
+                <category android:name="com.group28.android.smartshopper" />
             </intent-filter>
         </receiver>
+
 
         <service
             android:name=".Service.GCMPushReceiverService"
