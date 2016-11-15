@@ -52,19 +52,18 @@
         <activity
             android:name=".Activity.GroupMemoUpdateActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.RecommendActivity"/>
+        <activity android:name=".Activity.RecommendActivity" />
 
         <receiver
             android:name=".Service.GCMBroadcastReceiver"
             android:exported="false"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
                 <category android:name="com.group28.android.smartshopper" />
             </intent-filter>
         </receiver>
-
 
         <service
             android:name=".Service.GCMPushReceiverService"
@@ -82,9 +81,13 @@
         </service>
         <service
             android:name=".Service.GCMRegistrationIntentService"
-            android:exported="false"></service>
+            android:exported="false" />
+        <service
+            android:name=".Service.GroupMemoUpdateService"
+            android:exported="false" />
 
-        <activity android:name=".Activity.RecommendSuccess"></activity>
+        <activity android:name=".Activity.RecommendSuccess" />
+
     </application>
 
 </manifest>

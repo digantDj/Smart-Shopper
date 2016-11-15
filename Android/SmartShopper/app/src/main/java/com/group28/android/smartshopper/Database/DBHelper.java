@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static android.R.attr.category;
-import static android.R.attr.type;
-
 /**
  * Created by Mihir on 9/30/2016.
  */
@@ -304,6 +301,29 @@ public class DBHelper extends SQLiteOpenHelper {
         } finally {
             cursor.close();
             return participants.toString();
+        }
+
+    }
+
+
+    public boolean isParticipantPresent(int memoId,String email) {
+        Cursor cursor = null;
+        boolean flag = false;
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + participantTableName + " WHERE `" + participantCOL1 + "` = " + memoId
+                + " AND `" + participantCOL2 + "`= '" + email + "'";
+        Log.d("isParticipantPresent", selectQuery);
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+            if(cursor.moveToNext()){
+                flag = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(null!=cursor)
+                cursor.close();
+            return flag;
         }
 
     }

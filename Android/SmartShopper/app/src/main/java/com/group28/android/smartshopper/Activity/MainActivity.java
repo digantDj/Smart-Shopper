@@ -32,6 +32,7 @@ import com.group28.android.smartshopper.Model.User;
 import com.group28.android.smartshopper.R;
 import com.group28.android.smartshopper.Service.GCMBroadcastReceiver;
 import com.group28.android.smartshopper.Service.GCMRegistrationIntentService;
+import com.group28.android.smartshopper.Service.GroupMemoUpdateService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -44,9 +45,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
-import static com.group28.android.smartshopper.Activity.RecommendActivity.preferenceTableName;
 
 public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
@@ -105,6 +103,7 @@ public class MainActivity extends AppCompatActivity  implements
     private static final String USERTABLE = "user";
     private static final String MEMOTABLE = "memo";
     private static final String PREFERENCETABLE = "preferences";
+    private static final String PARTICIPANTSTABLE = "participants";
 
     public static final String MyPREFERENCES = "SmartShopper" ;
     SharedPreferences sharedpreferences;
@@ -165,6 +164,7 @@ public class MainActivity extends AppCompatActivity  implements
             dbHelper.onCreateUserTable(USERTABLE);
             dbHelper.onCreateMemoTable(MEMOTABLE);
             dbHelper.onCreatePreferences(PREFERENCETABLE);
+            dbHelper.onCreateParticipantsTable(PARTICIPANTSTABLE);
             dbUser = new User();
         }
         catch(IOException e){
@@ -277,6 +277,10 @@ public class MainActivity extends AppCompatActivity  implements
     }
 
     public void loadHomePage(GoogleSignInResult googleSignInResult){
+
+        Intent backGroundIntent = new Intent(this, GroupMemoUpdateService.class);
+        startService(backGroundIntent);
+
         Intent homeIntent = new Intent(this, HomeActivity.class);
      //   homeIntent.putExtra(EXTRA_MESSAGE, googleSignInResult.getSignInAccount().getDisplayName()); // Adding message to invoke HomeActivity
       //  homeIntent.putExtra("userName",googleSignInResult.getSignInAccount().getDisplayName());
