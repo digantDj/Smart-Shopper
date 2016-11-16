@@ -56,7 +56,7 @@
     <!-- TODO(user): replace with your real server client ID -->
     <!-- Server Client ID.  This should be a valid Web OAuth 2.0 Client ID obtained
          from https://console.developers.google.com/ -->
-    <string name="server_client_id">331443459801-o5uv0g7r8f0vp20lkcf7iud8512ksj42.apps.googleusercontent.com</string>
+    <string name="server_client_id">896926499088-sc5tnae6uj7va4a6ah81pp9pv9fn7afp.apps.googleusercontent.com</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"

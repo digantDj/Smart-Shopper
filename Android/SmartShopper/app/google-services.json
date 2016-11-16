@@ -1,43 +1,33 @@
 {
   "project_info": {
-    "project_number": "331443459801",
-    "firebase_url": "https://smart-shopper-f68b5.firebaseio.com",
-    "project_id": "smart-shopper-f68b5",
-    "storage_bucket": "smart-shopper-f68b5.appspot.com"
+    "project_number": "896926499088",
+    "project_id": "firebase-smartshopper"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:331443459801:android:9dca047c4c618926",
+        "mobilesdk_app_id": "1:896926499088:android:9dca047c4c618926",
         "android_client_info": {
           "package_name": "com.group28.android.smartshopper"
         }
       },
       "oauth_client": [
         {
-          "client_id": "331443459801-41brf50bo1at3cqqgv6fqbnbn3m8dtkl.apps.googleusercontent.com",
+          "client_id": "896926499088-sc5tnae6uj7va4a6ah81pp9pv9fn7afp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.group28.android.smartshopper",
-            "certificate_hash": "1660B954152C785E42DFD79A50C37A3E6AD6E6A3"
+            "certificate_hash": "436570F9A77B34C17501E82352ED3CEE92F522EA"
           }
         },
         {
-          "client_id": "331443459801-ik9amhfdckpk504l358jaudo2i48rps2.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "331443459801-o5uv0g7r8f0vp20lkcf7iud8512ksj42.apps.googleusercontent.com",
-          "client_type": 3
-        },
-        {
-          "client_id": "331443459801-o3kct85eo4h5qramvrv8qlf7aspnuika.apps.googleusercontent.com",
+          "client_id": "896926499088-e16hahf4g1mn8b62uf7cu4fv01kn60bl.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDMZAYX5wmUwE6C8icYK9J4TNCIGWJCTs0"
+          "current_key": "AIzaSyDXuFfEqkkVGkgD2arCTk-FoSaNaPUVnAs"
         }
       ],
       "services": {
@@ -45,16 +35,11 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "331443459801-ik9amhfdckpk504l358jaudo2i48rps2.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
-          "status": 2
+          "status": 1
         }
       }
     }
