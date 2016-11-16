@@ -1,8 +1,10 @@
 package com.group28.android.smartshopper.Activity;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -45,6 +48,7 @@ import com.group28.android.smartshopper.Fragments.FragmentOne;
 import com.group28.android.smartshopper.Fragments.FragmentTwo;
 import com.group28.android.smartshopper.Model.Memo;
 import com.group28.android.smartshopper.R;
+import com.group28.android.smartshopper.Service.GeoFenceService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -217,6 +221,19 @@ public class HomeActivity extends AppCompatActivity
         bindWidgetsWithAnEvent();
         setupTabLayout();
 
+        /***
+         * NEED TO CHANGE
+         */
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    HomeActivity.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    12345
+            );
+        }
+
+        Intent geoFenceServiceIntent = new Intent(this, GeoFenceService.class);
+        startService(geoFenceServiceIntent);
     }
 
     public static HomeActivity getInstance() {
