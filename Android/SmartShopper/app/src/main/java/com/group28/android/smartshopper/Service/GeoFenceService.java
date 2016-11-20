@@ -9,8 +9,6 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -50,7 +48,8 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     public static final int MAXIMUM_GEOFENCES = 98;
     public static final String STATUS = "status";
     public static final String OK = "OK";
-    public static final float GEOFENCE_RADIUS_IN_METERS = 500;
+    public static final float USERGEOFENCE_RADIUS_IN_METERS = 500;
+    public static final float PLACEGEOFENCE_RADIUS_IN_METERS = 500;
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = 24*60*60*1000;
     public static final String GEOMETRY = "geometry";
     public static final String RESULT = "results";
@@ -68,22 +67,20 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     private List<Place> places;
 
 
-    private static final String TAG = "Awareness";
+    private static final String TAG = "GeoFenceService";
     private GoogleApiClient mGoogleApiClient;
     //private GoogleApiClient mGoogleApiClientSnapShot;
     //private GoogleApiClient mGoogleApiClientAwareness;
     //private GoogleApiClient mGoogleApiClientPlace;
     protected Geofence mUserGeofence;
     protected List<Geofence> mPlaceGeofenceList;
+    protected PendingIntent pendingIntent;
 
-
-    private static final int PERMISSION_REQUEST_CODE = 100;
-    ListView lstPlaces;
 
 
     @Override
     public void onCreate(){
-        Log.d("GeoFenceService", "onCreate");
+        Log.d(TAG, "onCreate");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -91,6 +88,8 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                 .addApi(Places.PLACE_DETECTION_API)
                 .addApi(Awareness.API)
                 .build();
+
+        pendingIntent = null;
 
        /* mGoogleApiClientSnapShot = new GoogleApiClient.Builder(this)
                 .addApi(Awareness.API)
@@ -111,7 +110,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("GeoFenceService", "OnStartCommand");
+        Log.d(TAG, "OnStartCommand");
         if (!mGoogleApiClient.isConnecting() || !mGoogleApiClient.isConnected()) {
             mGoogleApiClient.connect();
         }
@@ -127,7 +126,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             mGoogleApiClientPlace.connect();
         }*/
 
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Nullable
@@ -138,14 +137,8 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.d("GeoFenceService", "initShapshot " + latitude + "  " + longitude);
+        Log.d(TAG , "onConnected");
         initShapshot();
-        /*Log.d("GeoFenceService", "initUserGeoFence" +  latitude + "  " + longitude);
-        initUserGeoFence();
-        Log.d("GeoFenceService", "loadNearByPlaces" + latitude + "  " + longitude);
-        loadNearByPlaces();
-        Log.d("GeoFenceService", "done loadNearByPlaces " + latitude + "  " + longitude);*/
-        //createPlaceFences();
     }
 
     @Override
@@ -161,12 +154,9 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onResult(@NonNull Status status) {
         if (status.isSuccess()) {
-            Log.i("GeoFence", "User Fence Added");
+            Log.i(TAG, "User Fence Added");
         } else {
-            Log.i("GeoFence", "Error");
-            // Get the status code for the error and log it using a user-friendly message.
-            //String errorMessage = GeofenceErrorMessages.getErrorString(this,
-             //      status.getStatusCode());
+            Log.i(TAG, "Error");
         }
     }
 
@@ -176,30 +166,60 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                     @Override
                     public void onResult(@NonNull LocationResult locationResult) {
                         if (!locationResult.getStatus().isSuccess()) {
-                            Log.e("SnapShot", "Could not get location.");
+                            Log.e(TAG + " SnapShot", "Could not get location.");
                             return;
                         }
                         Location location = locationResult.getLocation();
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
-                        Log.i("SnapShot", "Lat: " + latitude + ", Lon: " + longitude);
+                        Log.i(TAG + " SnapShot", "Lat: " + latitude + ", Lon: " + longitude);
 
-                        Log.d("GeoFenceService", "initUserGeoFence" +  latitude + "  " + longitude);
-                        initUserGeoFence();
-                        Log.d("GeoFenceService", "loadNearByPlaces" + latitude + "  " + longitude);
+                        //initUserGeoFence();
                         loadNearByPlaces();
-                        Log.d("GeoFenceService", "done loadNearByPlaces " + latitude + "  " + longitude);
-                        // createPlaceFences();
-
-                        //Toast.makeText(MainActivity.this, "Lat: " + latitude + ", Lon: " + longitude, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    public void createPlaceFences(){
-        Log.d("GeoFenceSerice", "inside CreatePlaceFences");
+
+
+    public void initUserGeoFence(){
+        Log.d(TAG + " UserGeoFence", "initUserGeoFence at" +  latitude + "  " + longitude);
+        mUserGeofence = new Geofence.Builder()
+                .setRequestId("UserGeoFence")
+                .setCircularRegion(
+                        latitude,
+                        longitude,
+                        USERGEOFENCE_RADIUS_IN_METERS
+                )
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                        Geofence.GEOFENCE_TRANSITION_EXIT)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .build();
+
+        if (!mGoogleApiClient.isConnected()) {
+            Log.e(TAG + " UserGeoFence", "Google API Client not connected!");
+            return;
+        }
+
+        try {
+            LocationServices.GeofencingApi.addGeofences(
+                    mGoogleApiClient,
+                    getGeofencingRequest(),
+                    getGeofencePendingIntent()
+            ).setResultCallback(this); // Result processed in onResult().
+
+        } catch (SecurityException securityException) {
+            Log.e(TAG+ " UserGeoFence", securityException.toString());
+            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
+        }
+    }
+
+    public void createGeoFences(){
+        Log.d(TAG + " createGeoFences", "creating fences around places....");
         mPlaceGeofenceList = new ArrayList<>();
         int count = 0;
+
+        //Adding place fences
         for (Place place : places) {
             count++;
             if (count == MAXIMUM_GEOFENCES) {
@@ -210,48 +230,30 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                     .setCircularRegion(
                             place.getLatlng().latitude,
                             place.getLatlng().longitude,
-                            GEOFENCE_RADIUS_IN_METERS
+                            PLACEGEOFENCE_RADIUS_IN_METERS
                     )
-                    .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                    .setExpirationDuration(Geofence.NEVER_EXPIRE)
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
                             Geofence.GEOFENCE_TRANSITION_EXIT)
                     .build());
 
         }
-        if (!mGoogleApiClient.isConnected()) {
-            Log.e("PlaceGeoFence", "Google API Client not connected!");
-            //Toast.makeText(this, "Google API Client not connected!", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
-        try {
-            LocationServices.GeofencingApi.addGeofences(
-                    mGoogleApiClient,
-                    getGeofencingRequest(),
-                    getGeofencePendingIntent()
-            ).setResultCallback(this); // Result processed in onResult().
-
-        } catch (SecurityException securityException) {
-            Log.e("UserGeoFence", securityException.toString());
-            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
-        }
-    }
-
-    public void initUserGeoFence(){
-        mUserGeofence = new Geofence.Builder()
+        //Adding user fence
+        mPlaceGeofenceList.add(new Geofence.Builder()
                 .setRequestId("UserGeoFence")
                 .setCircularRegion(
                         latitude,
                         longitude,
-                        GEOFENCE_RADIUS_IN_METERS
+                        USERGEOFENCE_RADIUS_IN_METERS
                 )
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
                         Geofence.GEOFENCE_TRANSITION_EXIT)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .build();
+                .build());
 
         if (!mGoogleApiClient.isConnected()) {
-            Log.e("UserGeoFence", "Google API Client not connected!");
+            Log.e(TAG + " createGeoFences", "Google API Client not connected!");
             //Toast.makeText(this, "Google API Client not connected!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -264,12 +266,19 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             ).setResultCallback(this); // Result processed in onResult().
 
         } catch (SecurityException securityException) {
-            Log.e("UserGeoFence", securityException.toString());
+            Log.e(TAG + " createGeoFences", securityException.toString());
             // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
         }
     }
 
     private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER | GeofencingRequest.INITIAL_TRIGGER_EXIT);
+        builder.addGeofences(mPlaceGeofenceList);
+        return builder.build();
+    }
+
+    private GeofencingRequest getPlaceGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
         builder.addGeofence(mUserGeofence);
@@ -277,14 +286,25 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     }
 
     private PendingIntent getGeofencePendingIntent() {
+        /*if (pendingIntent == null) {
+            Intent intent = new Intent(this, GeofenceTransitionsReceiver.class);
+            intent.setAction("GeofenceFilter");
+
+            // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+        return pendingIntent;*/
+
         Intent intent = new Intent(this, GeofenceTransitionsReceiver.class);
         intent.setAction("GeofenceFilter");
+
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling addgeoFences()
         return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private void loadNearByPlaces() {
 
+    private void loadNearByPlaces() {
+        Log.d(TAG + " loadNearByPlaces", " " + latitude + "  " + longitude);
         String type = "grocery_or_supermarket";
         StringBuilder googlePlacesUrl =
                 new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
@@ -299,15 +319,15 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                     @Override
                     public void onResponse(JSONObject result) {
 
-                        Log.i(TAG, "onResponse: Result= " + result.toString());
+                        Log.i(TAG + " loadNearByPlaces", "onResponse: Result= " + result.toString());
                         parseLocationResult(result);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "onErrorResponse: Error= " + error);
-                        Log.e(TAG, "onErrorResponse: Error= " + error.getMessage());
+                        Log.e(TAG + " loadNearByPlaces", "onErrorResponse: Error= " + error);
+                        Log.e(TAG + " loadNearByPlaces", "onErrorResponse: Error= " + error.getMessage());
                     }
                 });
 
@@ -315,13 +335,13 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     }
 
     private void parseLocationResult(JSONObject result) {
-        Log.d("GeoFenceService", "inside parseLocationResult");
+        Log.d(TAG + " parseLocationResult", "loading near by places....");
         double latitude, longitude;
 
         try {
             JSONArray jsonArray = result.getJSONArray(RESULT);
             places = new ArrayList<>();
-            //ArrayAdapter myAdapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1);
+
             if (result.getString(STATUS).equalsIgnoreCase(OK)) {
 
                 for (int i = 0; i < jsonArray.length(); i++) {
@@ -351,41 +371,19 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
                     places.add(place);
 
-
-                    /*if (!place.isNull(VICINITY)) {
-                        vicinity = place.getString(VICINITY);
-                    }
-
-                    //reference = jsonPlace.getString(REFERENCE);
-                    //rate = jsonPlace.getString("rating");
-
-                    //myAdapter.add(placeName + "    Rating ( " + rate + " ) ");
-                    //MarkerOptions markerOptions = new MarkerOptions();
-
-                    //markerOptions.position(latLng);
-                    //markerOptions.title(placeName + " : " + vicinity);
-
-                    // mMap.addMarker(markerOptions);
-
-
-                    */
-
-
                 }
-                Log.i("Near By Places", " Supermarkets found!");
-                //Toast.makeText(getBaseContext(), jsonArray.length() + " Supermarkets found!",
-                        //Toast.LENGTH_LONG).show();
+                Log.i(TAG + " parseLocationResult", " Near by place: Supermarkets found!");
+
             } else if (result.getString(STATUS).equalsIgnoreCase(ZERO_RESULTS)) {
-                Log.i("Near By Places", "No Supermarket found in 5KM radius!!!");
-                //Toast.makeText(getBaseContext(), "No Supermarket found in 5KM radius!!!",
-                  //      Toast.LENGTH_LONG).show();
+                Log.i(TAG + " parseLocationResult", " Near by place: No Supermarket found in 5KM radius!!!");
+
             }
-            createPlaceFences();
+            createGeoFences();
 
         } catch (JSONException e) {
 
             e.printStackTrace();
-            Log.e(TAG, "parseLocationResult: Error=" + e.getMessage());
+            Log.e(TAG + " parseLocationResult", " Near by place: Error=" + e.getMessage());
         }
     }
 }

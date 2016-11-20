@@ -96,12 +96,13 @@
             android:name="com.group28.android.smartshopper.Service.GCMRegistrationIntentService"
             android:exported="false">
         </service>
-        <receiver android:name="com.group28.android.smartshopper.Service.GeofenceTransitionsReceiver">
+        <receiver
+            android:name="com.group28.android.smartshopper.Service.GeofenceTransitionsReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
-                <action android:name="GeofenceFilter">
-                </action>
+                <action android:name="GeofenceFilter" />
             </intent-filter>
-
         </receiver>
         <service
             android:name="com.group28.android.smartshopper.Service.GeoFenceService"
