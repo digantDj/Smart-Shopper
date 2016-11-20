@@ -87,7 +87,9 @@
             android:exported="false" />
 
         <activity android:name=".Activity.RecommendSuccess" />
-
+        <activity
+            android:name=".Activity.SnoozeSettingsActivity"
+            android:label="@string/title_activity_snooze_settings"></activity>
     </application>
 
 </manifest>

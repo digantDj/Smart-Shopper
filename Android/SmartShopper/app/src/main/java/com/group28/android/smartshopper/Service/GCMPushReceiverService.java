@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,13 +24,23 @@ import static android.R.id.message;
 
 public class GCMPushReceiverService extends GcmListenerService {
 
+
+    // For recieving logged-in user's email and userName
+    public static final String MyPREFERENCES = "SmartShopper" ;
+    private static SharedPreferences sharedpreferences;
+
     //This method will be called on every new message received
     @Override
     public void onMessageReceived(String from, Bundle data) {
         //Getting the message from the bundle
        // String message = data.getString("message");
         //Displaying a notiffication with the message
-        sendNotification(data);
+
+        // Added code to check for Snooze settings
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        if(!sharedpreferences.getString("snooze","").equals("true")) {
+            sendNotification(data);
+        }
     }
 
     //This method is generating a notification and displaying the notification
@@ -54,7 +65,7 @@ public class GCMPushReceiverService extends GcmListenerService {
                 .setContentIntent(pendingIntent);
                 */
 
-        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.common_plus_signin_btn_icon_light, "Accept", pendingIntent).build();
+        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_menu_send, "Accept", pendingIntent).build();
 
         NotificationCompat.Builder noBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -68,6 +79,6 @@ public class GCMPushReceiverService extends GcmListenerService {
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, noBuilder.build()); //0 = ID of notification
-      //  notificationManager.cancelAll();
+        notificationManager.cancelAll();
     }
 }

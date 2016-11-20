@@ -332,6 +332,8 @@ public class HomeActivity extends AppCompatActivity
 
         if (id == R.id.nav_manage) {
             // Handle the Snooze action
+            Intent snoozeIntent = new Intent(HomeActivity.this, SnoozeSettingsActivity.class);
+            startActivity(snoozeIntent);
 
         } else if (id == R.id.nav_share) {
             // Share preference
