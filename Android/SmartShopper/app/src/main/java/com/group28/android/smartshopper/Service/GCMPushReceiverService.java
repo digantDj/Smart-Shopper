@@ -79,6 +79,6 @@ public class GCMPushReceiverService extends GcmListenerService {
 
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, noBuilder.build()); //0 = ID of notification
-        notificationManager.cancelAll();
+  //      notificationManager.cancelAll();
     }
 }

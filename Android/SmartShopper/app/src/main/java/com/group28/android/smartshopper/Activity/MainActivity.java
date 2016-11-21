@@ -386,7 +386,7 @@ public class MainActivity extends AppCompatActivity  implements
 
     public void setUpGCMServices(){
     //Initializing our broadcast receiver
-        mRegistrationBroadcastReceiver = new GCMBroadcastReceiver();
+       // mRegistrationBroadcastReceiver = new GCMBroadcastReceiver();
 
         //Checking play service is available or not
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
@@ -410,11 +410,11 @@ public class MainActivity extends AppCompatActivity  implements
             //Starting intent to register device
             Intent itent = new Intent(this, GCMRegistrationIntentService.class);
             startService(itent);
-            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter(GCMRegistrationIntentService.REGISTRATION_SUCCESS));
+           // LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter(GCMRegistrationIntentService.REGISTRATION_SUCCESS));
         }
 
     }
-
+/*
     //Registering receiver on activity resume
     @Override
     protected void onResume() {
@@ -434,4 +434,5 @@ public class MainActivity extends AppCompatActivity  implements
         Log.w("MainActivity", "onPause");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
     }
+    */
 }
