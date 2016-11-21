@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
@@ -15,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -37,7 +39,7 @@ import java.util.TimerTask;
  * Created by Mihir on 11/4/2016.
  */
 
-public class GeofenceTransitionsReceiver extends BroadcastReceiver {
+public class GeofenceTransitionsReceiver extends BroadcastReceiver implements GoogleApiClient.OnConnectionFailedListener {
 
     protected static final String TAG = "GeofenceTransitionsReceiver";
 
@@ -47,7 +49,7 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
 
     private Timer placeTimer = new Timer();
     private static final long DWELL_WAIT_TIME =  60*1000L; //in milliseconds
-
+    private  String placeForTimer = "";
     @Override
     public void onReceive(Context context, Intent intent) {
         GeofencingEvent event = GeofencingEvent.fromIntent(intent);
@@ -64,6 +66,8 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
         int transition = event.getGeofenceTransition();
         switch (transition) {
             case Geofence.GEOFENCE_TRANSITION_ENTER: {
+                placeForTimer  = requestId;
+                //TODO: for intersecting fences
                 setTimerStart(requestId, context);
 
                 Log.i(TAG, "Entered " + requestId);
@@ -74,7 +78,10 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
             case Geofence.GEOFENCE_TRANSITION_EXIT: {
                 Log.i(TAG, "Exit from " + requestId);
                 //sendNotification("Exit from " + requestId,context);
-                placeTimer.cancel();
+                if(placeForTimer.equals(requestId)){
+                    placeTimer.cancel();
+                    placeForTimer = "";
+                }
                 //TODO:  for UserGeoFence recompute userGeoFence again
                 break;
             }
@@ -92,7 +99,7 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
 
     private void setTimerStart(final String placeName, final Context context) {
         Timer timer = new Timer();
-
+        Log.i(TAG, "TimerTask Method Started.");
         timer.scheduleAtFixedRate(new TimerTask() {
             private String TAG = "PlacesTimer";
 
@@ -127,9 +134,10 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
                     public void onResult(PlaceLikelihoodBuffer likelyPlaces) {
 
                         Log.i(TAG, "ResultCallback");
-
+                        Log.i(TAG, "no of likely places : " + likelyPlaces.getCount());
                         for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                            if (placeLikelihood.getPlace().equals(placeName)) {
+                            Log.i(TAG, placeLikelihood.getPlace().getName().toString());
+                            if (placeLikelihood.getPlace().getName().toString().equals(placeName)) {
                                 sendNotification("You were at: " + placeName +". Did you buy anything?", context);
                             }
                         }
@@ -139,7 +147,7 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
 
             }
 
-        }, 0, DWELL_WAIT_TIME);
+        }, DWELL_WAIT_TIME, DWELL_WAIT_TIME);
 
 
         Log.i(TAG, "TimerTask Started.");
@@ -182,5 +190,10 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver {
 
         // Issue the notification
         mNotificationManager.notify(generatedId++, builder.build());
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }
