@@ -159,9 +159,9 @@ public class DBHelper extends SQLiteOpenHelper {
       contentValues.put(memoCOL9,new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
       String condition;
       if("GROUP".equals(type))
-          condition = memoCOL3+"="+memo.getGroupMemoId();
+          condition = memoCOL3+"="+memo.getGroupMemoId() + " and `" +  memoCOL6 + "` = '" + type + "'";
       else
-          condition = memoCOL1+"="+memo.getMemoId();
+          condition = memoCOL1+"="+memo.getMemoId()+ " and `" +  memoCOL6 + "` = '" + type + "'";
       long result = db.update(tableName,contentValues,condition,null);
 
       if (result == -1) {
@@ -254,9 +254,9 @@ public class DBHelper extends SQLiteOpenHelper {
       db = dbHelper.getReadableDatabase();
       String selectQuery;
       if("GROUP".equals(type))
-          selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL3 + "` = "+ memoId;
+          selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL3 + "` = "+ memoId + " and `" +  memoCOL6 + "` = '" + type + "'";
       else
-          selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL1 + "` = "+ memoId;
+          selectQuery = "SELECT * FROM " + memoTableName + " WHERE `" + memoCOL1 + "` = "+ memoId + " and `" +  memoCOL6 + "` = '" + type + "'";
       Log.d("getMemoWithMemoId query",selectQuery);
       try {
           cursor = db.rawQuery(selectQuery, null);

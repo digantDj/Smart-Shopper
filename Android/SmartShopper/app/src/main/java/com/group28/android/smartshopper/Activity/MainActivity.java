@@ -281,6 +281,7 @@ public class MainActivity extends AppCompatActivity  implements
         Intent backGroundIntent = new Intent(this, GroupMemoUpdateService.class);
         startService(backGroundIntent);
 
+        Toast.makeText(this,"Group Memo Synchronized Successfully",Toast.LENGTH_SHORT).show();
         Intent homeIntent = new Intent(this, HomeActivity.class);
      //   homeIntent.putExtra(EXTRA_MESSAGE, googleSignInResult.getSignInAccount().getDisplayName()); // Adding message to invoke HomeActivity
       //  homeIntent.putExtra("userName",googleSignInResult.getSignInAccount().getDisplayName());

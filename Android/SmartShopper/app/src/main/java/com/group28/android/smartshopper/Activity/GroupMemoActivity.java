@@ -179,7 +179,10 @@ public class GroupMemoActivity extends Activity implements AdapterView.OnItemSel
                     httpPost.setEntity(entity);
                     new GroupMemoActivity.CreateMemo().execute(httpClient, httpPost);
 
-                    // send notification to participants
+
+
+
+                   /* // send notification to participants
                     httpClient = new DefaultHttpClient();
                     httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/send_push");
                     for(String email:participants){
@@ -192,6 +195,7 @@ public class GroupMemoActivity extends Activity implements AdapterView.OnItemSel
                         httpPost.setEntity(entity);
                         new GroupMemoActivity.CreateMemo().execute(httpClient, httpPost);
                     }
+                    */
                 }catch (IOException ioe){
 
                 }catch(JSONException je){
