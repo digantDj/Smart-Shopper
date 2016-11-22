@@ -21,9 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static android.R.attr.category;
-import static android.R.attr.type;
-
 /**
  * Created by Mihir on 9/30/2016.
  */
@@ -308,12 +305,61 @@ public class DBHelper extends SQLiteOpenHelper {
 
     }
 
+
+    public boolean isParticipantPresent(int memoId,String email) {
+        Cursor cursor = null;
+        boolean flag = false;
+        db = dbHelper.getReadableDatabase();
+        String selectQuery = "SELECT * FROM " + participantTableName + " WHERE `" + participantCOL1 + "` = " + memoId
+                + " AND `" + participantCOL2 + "`= '" + email + "'";
+        Log.d("isParticipantPresent", selectQuery);
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+            if(cursor.moveToNext()){
+                flag = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if(null!=cursor)
+                cursor.close();
+            return flag;
+        }
+
+    }
+
     public ArrayList<Preference> getPreferences(int userId) {
         ArrayList<Preference> preferences = new ArrayList<Preference>();
         Cursor cursor = null;
         db = dbHelper.getReadableDatabase();
         Preference preference;
         String selectQuery = "SELECT * FROM " + preferenceTableName + " WHERE `" + prefCOL1 + "` = " + userId;
+        Log.d("getPreferenceQuery", selectQuery);
+        try {
+            cursor = db.rawQuery(selectQuery, null);
+            while (cursor.moveToNext()) {
+                preference = new Preference();
+                preference.setUserId(userId);
+                preference.setCategory(cursor.getString(cursor.getColumnIndex(prefCOL2)));
+                preference.setShoppingPreference(cursor.getString(cursor.getColumnIndex(prefCOL3)));
+                preferences.add(preference);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            preferences = null;
+        } finally {
+            cursor.close();
+            return preferences;
+        }
+
+    }
+
+    public ArrayList<Preference> getPreferencesFromCategory(int userId, String category) {
+        ArrayList<Preference> preferences = new ArrayList<Preference>();
+        Cursor cursor = null;
+        db = dbHelper.getReadableDatabase();
+        Preference preference;
+        String selectQuery = "SELECT * FROM " + preferenceTableName + " WHERE `" + prefCOL1 + "` = " + userId + " and " + prefCOL2 + " = '" + category + "'";
         Log.d("getPreferenceQuery", selectQuery);
         try {
             cursor = db.rawQuery(selectQuery, null);
@@ -341,7 +387,7 @@ public class DBHelper extends SQLiteOpenHelper {
         //contentValues.put(prefCOL2, preference.getCategory());
         contentValues.put(prefCOL3, preference.getShoppingPreference());
         String condition;
-        condition = prefCOL1 + " = " + preference.getUserId() + " and " + prefCOL2 + " = " + preference.getCategory();
+        condition = prefCOL1 + " = " + preference.getUserId() + " and " + prefCOL2 + " = '" + preference.getCategory() + "'";
         long result = db.update(tableName,contentValues,condition,null);
         if (result == -1) {
             return false;

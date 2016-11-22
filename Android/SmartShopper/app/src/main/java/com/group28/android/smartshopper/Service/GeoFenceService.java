@@ -48,9 +48,9 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     public static final int MAXIMUM_GEOFENCES = 98;
     public static final String STATUS = "status";
     public static final String OK = "OK";
-    public static final float USERGEOFENCE_RADIUS_IN_METERS = 500;
-    public static final float PLACEGEOFENCE_RADIUS_IN_METERS = 500;
-    public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = 24*60*60*1000;
+    public static final float USERGEOFENCE_RADIUS_IN_METERS = 5000;
+    public static final float PLACEGEOFENCE_RADIUS_IN_METERS = 100;
+
     public static final String GEOMETRY = "geometry";
     public static final String RESULT = "results";
     public static final String TYPE = "types";

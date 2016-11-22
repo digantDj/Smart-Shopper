@@ -10,8 +10,10 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <permission android:name="com.group28.android.smartshopper.permission.C2D_MESSAGE"
+    <permission
+        android:name="com.group28.android.smartshopper.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
+
     <uses-permission android:name="com.group28.android.smartshopper.permission.C2D_MESSAGE" />
 
     <application
@@ -68,25 +70,28 @@
         <activity
             android:name=".Activity.GroupMemoUpdateActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Activity.RecommendActivity"></activity>
+        <activity android:name=".Activity.RecommendActivity" />
+
         <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:name=".Service.GCMBroadcastReceiver"
+            android:exported="false"
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="com.example.gcm" />
+
+                <category android:name="com.group28.android.smartshopper" />
             </intent-filter>
         </receiver>
+
         <service
-            android:name="com.group28.android.smartshopper.Service.GCMPushReceiverService"
-            android:exported="false" >
+            android:name=".Service.GCMPushReceiverService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name="com.group28.android.smartshopper.Service.GCMTokenRefreshListenerService"
+            android:name=".Service.GCMTokenRefreshListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
@@ -108,6 +113,16 @@
             android:name="com.group28.android.smartshopper.Service.GeoFenceService"
             android:exported="false">
         </service>
+
+            android:name=".Service.GCMRegistrationIntentService"
+            android:exported="false" />
+        <service
+            android:name=".Service.GroupMemoUpdateService"
+            android:exported="false" />
+
+        <activity android:name=".Activity.RecommendSuccess" />
+
+
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

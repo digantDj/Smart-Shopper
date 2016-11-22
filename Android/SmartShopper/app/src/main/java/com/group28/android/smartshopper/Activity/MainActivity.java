@@ -33,7 +33,9 @@ import com.google.android.gms.common.api.Status;
 import com.group28.android.smartshopper.Database.DBHelper;
 import com.group28.android.smartshopper.Model.User;
 import com.group28.android.smartshopper.R;
+import com.group28.android.smartshopper.Service.GCMBroadcastReceiver;
 import com.group28.android.smartshopper.Service.GCMRegistrationIntentService;
+import com.group28.android.smartshopper.Service.GroupMemoUpdateService;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -46,7 +48,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 public class MainActivity extends AppCompatActivity  implements
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks,
@@ -104,6 +105,8 @@ public class MainActivity extends AppCompatActivity  implements
     private User dbUser;
     private static final String USERTABLE = "user";
     private static final String MEMOTABLE = "memo";
+    private static final String PREFERENCETABLE = "preferences";
+    private static final String PARTICIPANTSTABLE = "participants";
 
     public static final String MyPREFERENCES = "SmartShopper" ;
     SharedPreferences sharedpreferences;
@@ -163,6 +166,8 @@ public class MainActivity extends AppCompatActivity  implements
             dbHelper = dbHelper.getInstance(this.getApplicationContext());
             dbHelper.onCreateUserTable(USERTABLE);
             dbHelper.onCreateMemoTable(MEMOTABLE);
+            dbHelper.onCreatePreferences(PREFERENCETABLE);
+            dbHelper.onCreateParticipantsTable(PARTICIPANTSTABLE);
             dbUser = new User();
         }
         catch(IOException e){
@@ -276,6 +281,10 @@ public class MainActivity extends AppCompatActivity  implements
     }
 
     public void loadHomePage(GoogleSignInResult googleSignInResult){
+
+        Intent backGroundIntent = new Intent(this, GroupMemoUpdateService.class);
+        startService(backGroundIntent);
+
         Intent homeIntent = new Intent(this, HomeActivity.class);
      //   homeIntent.putExtra(EXTRA_MESSAGE, googleSignInResult.getSignInAccount().getDisplayName()); // Adding message to invoke HomeActivity
       //  homeIntent.putExtra("userName",googleSignInResult.getSignInAccount().getDisplayName());
@@ -380,29 +389,7 @@ public class MainActivity extends AppCompatActivity  implements
 
     public void setUpGCMServices(){
     //Initializing our broadcast receiver
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-
-            //When the broadcast received
-            //We are sending the broadcast from GCMRegistrationIntentService
-
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                //If the broadcast has received with success
-                //that means device is registered successfully
-                if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_SUCCESS)){
-                    //Getting the registration token from the intent
-                    token = intent.getStringExtra("token");
-                    //Displaying the token as toast
-                    Toast.makeText(getApplicationContext(), "Registration token:" + token, Toast.LENGTH_LONG).show();
-                    
-                    //if the intent is not with success then displaying error messages
-                } else if(intent.getAction().equals(GCMRegistrationIntentService.REGISTRATION_ERROR)){
-                    Toast.makeText(getApplicationContext(), "GCM registration error!", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Error occurred", Toast.LENGTH_LONG).show();
-                }
-            }
-        };
+        mRegistrationBroadcastReceiver = new GCMBroadcastReceiver();
 
         //Checking play service is available or not
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
@@ -426,6 +413,7 @@ public class MainActivity extends AppCompatActivity  implements
             //Starting intent to register device
             Intent itent = new Intent(this, GCMRegistrationIntentService.class);
             startService(itent);
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,new IntentFilter(GCMRegistrationIntentService.REGISTRATION_SUCCESS));
         }
 
     }
