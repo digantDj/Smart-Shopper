@@ -144,6 +144,7 @@ public class RecommendActivity extends Activity implements AdapterView.OnItemSel
                 HttpPost httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/send_push");
                 EditText email = (EditText) findViewById(R.id.shareEmail);
                 JSONObject jsonObj = new JSONObject();
+                jsonObj.put("type", "Preference");
                 jsonObj.put("email", email.getText());
                 jsonObj.put("title", "Recommendation from a friend");
                 jsonObj.put("message", sharedpreferences.getString("email", "") + " recommends you to try out " + place.getText().toString() + " for " + spinner.getSelectedItem().toString());

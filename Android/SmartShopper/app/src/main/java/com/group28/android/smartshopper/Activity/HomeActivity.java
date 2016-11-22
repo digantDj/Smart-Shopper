@@ -32,6 +32,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -45,6 +46,7 @@ import com.group28.android.smartshopper.Fragments.FragmentTwo;
 import com.group28.android.smartshopper.Model.Memo;
 import com.group28.android.smartshopper.R;
 import com.group28.android.smartshopper.Service.GeoFenceService;
+import com.group28.android.smartshopper.Service.GroupMemoUpdateService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -109,6 +111,11 @@ public class HomeActivity extends AppCompatActivity
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
         mGoogleApiClient.connect();
+
+        Intent backGroundIntent = new Intent(this, GroupMemoUpdateService.class);
+        startService(backGroundIntent);
+
+       // Toast.makeText(this,"Group Memo Synchronized Successfully",Toast.LENGTH_SHORT).show();
 
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);

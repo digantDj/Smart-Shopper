@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.android.gms.gcm.GcmListenerService;
+import com.group28.android.smartshopper.Activity.HomeActivity;
 import com.group28.android.smartshopper.Activity.MainActivity;
 import com.group28.android.smartshopper.Activity.RecommendSuccess;
 import com.group28.android.smartshopper.R;
@@ -39,7 +40,10 @@ public class GCMPushReceiverService extends GcmListenerService {
         // Added code to check for Snooze settings
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         if(!sharedpreferences.getString("snooze","").equals("true")) {
-            sendNotification(data);
+            if(data.getString("type").equals("GroupMemo"))
+                sendNotificationGroup(data);
+            else
+                sendNotification(data);
         }
     }
 
@@ -81,4 +85,39 @@ public class GCMPushReceiverService extends GcmListenerService {
         notificationManager.notify(0, noBuilder.build()); //0 = ID of notification
   //      notificationManager.cancelAll();
     }
+
+    private void sendNotificationGroup(Bundle data) {
+        // Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
+
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+       /* NotificationCompat.Builder noBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
+                */
+
+        NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_menu_send, "Accept", pendingIntent).build();
+
+        NotificationCompat.Builder noBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentText(data.getString("message"))
+                .setAutoCancel(true)
+                .setContentTitle(data.getString("title"))
+                .setContentIntent(pendingIntent)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(data.getString("message")))
+                //.addAction(R.drawable.ic_launcher, "Accept",pendingIntent);
+                .addAction(action);
+
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0, noBuilder.build()); //0 = ID of notification
+        //      notificationManager.cancelAll();
+    }
+
+
+
 }

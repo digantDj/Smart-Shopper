@@ -208,7 +208,7 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver implements Go
         android.support.v4.app.NotificationCompat.Builder builder = new android.support.v4.app.NotificationCompat.Builder(context);
 
         // Define the notification settings.
-        builder.setSmallIcon(R.drawable.cast_ic_notification_small_icon)
+        builder.setSmallIcon(R.drawable.ic_launcher)
                 .setColor(Color.RED)
                 .setContentTitle("SmartShopper")
                 .setContentText(notificationDetails)

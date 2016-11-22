@@ -33,7 +33,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
-
+import static com.google.android.gms.analytics.internal.zzy.j;
 
 
 public class GroupMemoActivity extends Activity implements AdapterView.OnItemSelectedListener {
@@ -182,20 +182,21 @@ public class GroupMemoActivity extends Activity implements AdapterView.OnItemSel
 
 
 
-                   /* // send notification to participants
+                   //send notification to participants
                     httpClient = new DefaultHttpClient();
                     httpPost = new HttpPost("http://smartshop-raredev.rhcloud.com/send_push");
                     for(String email:participants){
                         jsonObj = new JSONObject();
+                        jsonObj.put("type", "GroupMemo");
                         jsonObj.put("email", email);
-                        jsonObj.put("title", "Group Memo Added");
-                        jsonObj.put("message", sharedpreferences.getString("email","") + " added you to Memo - "+ category + ":" + content);
+                        jsonObj.put("title", "Group Memo");
+                        jsonObj.put("message", sharedpreferences.getString("email","") + " updated a Group Memo - "+ category + ":" + content);
                         entity = new StringEntity(jsonObj.toString(), HTTP.UTF_8);
                         entity.setContentType("application/json");
                         httpPost.setEntity(entity);
                         new GroupMemoActivity.CreateMemo().execute(httpClient, httpPost);
                     }
-                    */
+
                 }catch (IOException ioe){
 
                 }catch(JSONException je){
