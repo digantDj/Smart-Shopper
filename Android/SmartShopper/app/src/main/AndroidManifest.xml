@@ -71,7 +71,7 @@
             android:name=".Activity.GroupMemoUpdateActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Activity.RecommendActivity" />
-
+<!--
         <receiver
             android:name=".Service.GCMBroadcastReceiver"
             android:exported="false"
@@ -82,19 +82,24 @@
                 <category android:name="com.group28.android.smartshopper" />
             </intent-filter>
         </receiver>
+-->
+
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+
+                <category android:name="com.example.gcm" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".Service.GCMPushReceiverService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </service>
-        <service
-            android:name=".Service.GCMTokenRefreshListenerService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
@@ -122,6 +127,9 @@
 
         <activity android:name=".Activity.RecommendSuccess" />
 
+        <activity
+            android:name=".Activity.SnoozeSettingsActivity"
+            android:label="@string/title_activity_snooze_settings"></activity>
 
     </application>
 

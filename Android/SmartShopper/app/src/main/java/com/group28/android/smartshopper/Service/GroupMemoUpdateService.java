@@ -3,6 +3,7 @@ package com.group28.android.smartshopper.Service;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.group28.android.smartshopper.Activity.MainActivity;
 import com.group28.android.smartshopper.Database.DBHelper;
@@ -103,9 +104,8 @@ public class GroupMemoUpdateService extends IntentService {
                     }
 
 
-            //    }
-
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }catch (JSONException e) {

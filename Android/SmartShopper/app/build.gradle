@@ -12,6 +12,7 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -23,15 +24,19 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
+
     compile 'com.google.android.gms:play-services-auth:9.2.0'
     compile 'com.google.android.gms:play-services:9.2.0'
-
-compile 'com.google.android.gms:play-services-contextmanager:9.2.0'
-//compile 'com.google.android.gms:play-services:9.0.0'
-
-compile group: 'com.mcxiaoke.volley', name: 'library', version: '1.0.19'
+    /*compile 'com.google.android.gms:play-services-auth:9.6.1'
+    compile 'com.google.android.gms:play-services:9.6.1'*/
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:support-vector-drawable:23.4.0'
+    testCompile 'junit:junit:4.12'
+    compile 'com.google.android.gms:play-services-contextmanager:9.2.0'
+    compile group: 'com.mcxiaoke.volley', name: 'library', version: '1.0.19'
 }
 apply plugin: 'com.google.gms.google-services'
+
+
