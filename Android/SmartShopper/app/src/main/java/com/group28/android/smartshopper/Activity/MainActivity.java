@@ -295,6 +295,7 @@ public class MainActivity extends AppCompatActivity  implements
         editor.putString("userName", googleSignInResult.getSignInAccount().getDisplayName());
         editor.putString("email", googleSignInResult.getSignInAccount().getEmail());
         editor.putString("token", token);
+        editor.putString("snooze", "false");
         editor.commit();
 
        //Log.i("adsadasd",googleSignInResult.getSignInAccount().getPhotoUrl().toString());

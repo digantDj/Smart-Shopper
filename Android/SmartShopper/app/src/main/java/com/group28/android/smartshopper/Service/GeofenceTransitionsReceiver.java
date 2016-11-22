@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -28,12 +29,17 @@ import com.google.android.gms.location.places.PlaceLikelihood;
 import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 import com.group28.android.smartshopper.Activity.HomeActivity;
+import com.group28.android.smartshopper.Activity.MainActivity;
+import com.group28.android.smartshopper.Activity.RecommendSuccess;
 import com.group28.android.smartshopper.R;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.R.string.no;
+import static com.google.android.gms.analytics.internal.zzy.e;
 
 /**
  * Created by Mihir on 11/4/2016.
@@ -50,8 +56,15 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver implements Go
     private Timer placeTimer = new Timer();
     private static final long DWELL_WAIT_TIME =  60*1000L; //in milliseconds
     private  String placeForTimer = "";
+
+    // For recieving logged-in user's email and userName
+    public static final String MyPREFERENCES = "SmartShopper" ;
+    private static SharedPreferences sharedpreferences;
+
     @Override
     public void onReceive(Context context, Intent intent) {
+        sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        Log.i(TAG, "RECEIVED GEOFENCE BROADCAST");
         GeofencingEvent event = GeofencingEvent.fromIntent(intent);
         if (event.hasError()) {
             Log.e(TAG, "GeofencingEvent Error: " + event.getErrorCode());
@@ -71,7 +84,11 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver implements Go
                 setTimerStart(requestId, context);
 
                 Log.i(TAG, "Entered " + requestId);
-                sendNotification("You're near " + requestId + ". Do you want to buy something?", context);
+
+
+                    if (!sharedpreferences.getString("snooze", "").equals("true")) {
+                        sendNotification("You're near " + requestId + ". Do you want to buy something?", context, null);
+                    }
 
                 break;
             }
@@ -87,7 +104,9 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver implements Go
             }
             case Geofence.GEOFENCE_TRANSITION_DWELL: {
                 Log.i(TAG, "Dwelling at " + requestId);
-                sendNotification("You were at " + requestId + ". Did you buy?", context);
+                if(!sharedpreferences.getString("snooze","").equals("true")) {
+                    sendNotification("You were at:" + requestId + ". Did you buy?", context, null);
+                }
                 break;
             }
             default: {
@@ -138,7 +157,11 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver implements Go
                         for (PlaceLikelihood placeLikelihood : likelyPlaces) {
                             Log.i(TAG, placeLikelihood.getPlace().getName().toString());
                             if (placeLikelihood.getPlace().getName().toString().equals(placeName)) {
-                                sendNotification("You were at: " + placeName +". Did you buy anything?", context);
+                                if(!sharedpreferences.getString("snooze","").equals("true")) {
+                                    placeTimer.cancel();
+                                    sendNotification("You were at:" + placeName + ". Did you buy anything?", context, placeName);
+
+                                }
                             }
                         }
                         likelyPlaces.release();
@@ -153,9 +176,20 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver implements Go
         Log.i(TAG, "TimerTask Started.");
     }
 
-    private void sendNotification(String notificationDetails, Context context) {
+    private void sendNotification(String notificationDetails, Context context, String placeName) {
         // Create an explicit content Intent that starts the main Activity.
-        Intent notificationIntent = new Intent(context, HomeActivity.class);
+        Intent notificationIntent;
+        if(placeName != null) {
+            notificationIntent = new Intent(context, RecommendSuccess.class);
+            notificationIntent.putExtra("category", "Grocery");
+            notificationIntent.putExtra("place", placeName);
+
+            notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        }
+        else{
+            notificationIntent = new Intent(context, HomeActivity.class);
+        }
 
         // Construct a task stack.
         android.app.TaskStackBuilder stackBuilder = android.app.TaskStackBuilder.create(context);

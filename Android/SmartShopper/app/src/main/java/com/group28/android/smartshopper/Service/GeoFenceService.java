@@ -34,6 +34,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.android.gms.analytics.internal.zzy.F;
+
 /**
  * Created by Mihir on 11/12/2016.
  */
@@ -371,6 +373,11 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
                     places.add(place);
 
+                }
+                int i = 0;
+                for (Place place: places){
+                    i++;
+                    Log.i(TAG, i + "   " + place.getName());
                 }
                 Log.i(TAG + " parseLocationResult", " Near by place: Supermarkets found!");
 

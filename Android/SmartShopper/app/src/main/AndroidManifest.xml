@@ -119,8 +119,7 @@
             android:exported="false">
         </service>
 
-            android:name=".Service.GCMRegistrationIntentService"
-            android:exported="false" />
+
         <service
             android:name=".Service.GroupMemoUpdateService"
             android:exported="false" />
