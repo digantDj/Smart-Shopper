@@ -12,7 +12,7 @@
     tools:context="com.group28.android.smartshopper.Activity.RecommendSuccess">
 
     <TextView
-        android:text="Recommendation added to your interests."
+        android:text="Shopping Preference added to your interests."
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView3"
