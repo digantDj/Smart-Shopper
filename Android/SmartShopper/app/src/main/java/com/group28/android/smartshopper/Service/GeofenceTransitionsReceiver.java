@@ -54,7 +54,7 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver implements Go
     private static int generatedId = 0;
 
     private Timer placeTimer = new Timer();
-    private static final long DWELL_WAIT_TIME =  60*1000L; //in milliseconds
+    private static final long DWELL_WAIT_TIME =  45*1000L; //in milliseconds
     private  String placeForTimer = "";
 
     // For recieving logged-in user's email and userName
@@ -117,9 +117,9 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver implements Go
     }
 
     private void setTimerStart(final String placeName, final Context context) {
-        Timer timer = new Timer();
+
         Log.i(TAG, "TimerTask Method Started.");
-        timer.scheduleAtFixedRate(new TimerTask() {
+        placeTimer.scheduleAtFixedRate(new TimerTask() {
             private String TAG = "PlacesTimer";
 
             @Override
@@ -158,15 +158,19 @@ public class GeofenceTransitionsReceiver extends BroadcastReceiver implements Go
                             Log.i(TAG, placeLikelihood.getPlace().getName().toString());
                             if (placeLikelihood.getPlace().getName().toString().equals(placeName)) {
                                 if(!sharedpreferences.getString("snooze","").equals("true")) {
-                                    placeTimer.cancel();
+
                                     sendNotification("You were at:" + placeName + ". Did you buy anything?", context, placeName);
 
                                 }
                             }
                         }
+
                         likelyPlaces.release();
+                        Log.i(TAG, "Releasing LikelyPlaces");
                     }
                 });
+                Log.i(TAG, "Cancelling Place timer");
+                placeTimer.cancel();
 
             }
 
