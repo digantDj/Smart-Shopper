@@ -367,7 +367,14 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             // Signout from the application
             signOut();
-        } /* else if (id == R.id.nav_manage) {
+        }
+        else if (id == R.id.nav_search) {
+            // Smart Search leading to Results page
+            Intent smartSearchIntent = new Intent(HomeActivity.this, SmartSearch.class);
+            startActivity(smartSearchIntent);
+
+        }
+        /* else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
 

@@ -27,6 +27,10 @@
                 android:icon="@drawable/ic_menu_share"
                 android:title="Share Recommendation" />
             <item
+                android:id="@+id/nav_search"
+                android:icon="@drawable/places_ic_search"
+                android:title="Smart Search" />
+            <item
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_menu_logout"
                 android:title="Logout" />

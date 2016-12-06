@@ -393,4 +393,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             Log.e(TAG + " parseLocationResult", " Near by place: Error=" + e.getMessage());
         }
     }
+
+
 }
